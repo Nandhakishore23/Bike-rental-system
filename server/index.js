@@ -1,11 +1,17 @@
 const express = require("express");
 const app = express();
+require('dotenv').config();
 const dbConnection = require("./db");
 const port = process.env.PORT || 5000;
 app.use(express.json());
 var cors = require("cors");
 
-app.use(cors());
+const corsOption = {
+    origin: process.env.Backend_URL,
+    methods: 'GET,PUT,POST,DELETE,HEAD,PATCH,'
+}
+
+app.use(cors(corsOption));
 
 const AdminLoginRoute = require("./routes/adminLogin");
 const UserRoute = require("./routes/user");

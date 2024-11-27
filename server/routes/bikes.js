@@ -42,7 +42,7 @@ router.post("/deletebike", async (req, res) => {
   try {
     await Bike.findOneAndDelete({ _id: req.body.carid });
 
-    res.send("Car deleted successfully");
+    res.send("Bike deleted successfully");
   } catch (error) {
     return res.status(400).json(error);
   }

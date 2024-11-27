@@ -1,7 +1,7 @@
 import axios from "axios";
 import { message } from "antd";
 const API = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: process.env.Frontend_URL,
 });
 
 export const userLogin = (reqObj) => async (dispatch) => {
@@ -35,7 +35,7 @@ export const userRegister = (reqObj) => async (dispatch) => {
     dispatch({ type: "LOADING", payload: false });
   } catch (err) {
     console.log(err);
-    message.error("regitration failed");
+    message.error("registration failed");
     dispatch({ type: "LOADING", payload: false });
   }
 };

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 function connectDB() {
   mongoose.connect(
-    "mongodb+srv://nandha18kishore:Sanjay%4023@cluster0.kckv9.mongodb.net/",
+    process.env.MongoDB_URL ,
     { useUnifiedTopology: true, useNewUrlParser: true }
   );
 

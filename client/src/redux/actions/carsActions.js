@@ -1,7 +1,7 @@
 import axios from "axios";
 import { message } from "antd";
 const API = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: process.env.Frontend_URL,
 });
 
 export const getAllCars = () => async (dispatch) => {
@@ -25,7 +25,7 @@ export const addBike = (reqObj) => async (dispatch) => {
     await API.post("/bikes/addbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
-    message.success("New car added successfully");
+    message.success("New Bike added successfully");
     setTimeout(() => {
       window.location.href = "/admin";
     }, 500);
@@ -42,7 +42,7 @@ export const editBike = (reqObj) => async (dispatch) => {
     await API.post("/bikes/editbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
-    message.success("Car details updated successfully");
+    message.success("Bike details updated successfully");
     setTimeout(() => {
       window.location.href = "/admin";
     }, 500);
@@ -59,7 +59,7 @@ export const deleteBike = (reqObj) => async (dispatch) => {
     await API.post("/bikes/deletebike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
-    message.success("Car deleted successfully");
+    message.success("Bike deleted successfully");
     setTimeout(() => {
       window.location.reload();
     }, 500);
