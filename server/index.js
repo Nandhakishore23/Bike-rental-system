@@ -7,7 +7,7 @@ app.use(express.json());
 var cors = require("cors");
 
 const corsOption = {
-    origin: "*",
+    origin: process.env.Backend_URL,
     methods: 'GET,PUT,POST,DELETE,HEAD,PATCH,'
 }
 
