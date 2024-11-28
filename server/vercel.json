@@ -1,4 +1,7 @@
 {
+    "rewrites": [
+      { "source": "/api/:path*", "destination": "/server.js" }
+    ],
     "version":2,
     "builds":[{
         "src":"./index.js",
@@ -9,3 +12,5 @@
         "dest":"/"
     }]
 }
+
+  

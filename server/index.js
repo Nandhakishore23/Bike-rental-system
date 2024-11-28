@@ -15,10 +15,10 @@ app.use(cors(corsOption));
 
 const AdminLoginRoute = require("./routes/adminLogin");
 const UserRoute = require("./routes/user");
-const carsRoute = require("./routes/bikes");
+const BikeRoute = require("./routes/bikes");
 const BookingRoute = require("./routes/bookingRoute");
 
-app.use("/api/bikes/", carsRoute);
+app.use("/api/bikes/", BikeRoute);
 app.use("/api/users/", UserRoute);
 app.use("/api/bookings/", BookingRoute);
 app.use("/api/admin/", AdminLoginRoute);
