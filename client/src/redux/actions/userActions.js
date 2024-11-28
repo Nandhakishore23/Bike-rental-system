@@ -8,7 +8,7 @@ export const userLogin = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.post("/api/users/login", reqObj);
+    const response = await API.post("https://bike-rental-system-api.vercel.app/api/users/login", reqObj);
     localStorage.setItem("user", JSON.stringify(response.data));
     message.success("Login Success");
     dispatch({ type: "LOADING", payload: false });
@@ -26,7 +26,7 @@ export const userRegister = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.post("/api/users/register", reqObj);
+    const response = await API.post("https://bike-rental-system-api.vercel.app/api/users/register", reqObj);
     message.success("Registered sucessfully");
     setTimeout(() => {
       window.location.href = "/login";
