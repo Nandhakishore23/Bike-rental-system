@@ -8,7 +8,7 @@ export const getAllCars = () => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.get("https://bike-rental-system-api.vercel.app/bikes/getallbikes");
+    const response = await API.get("https://bike-rental-system-api.vercel.app/api/bikes/getallbikes");
 
     dispatch({ type: "GET_ALL_CARS", payload: response.data });
     dispatch({ type: "LOADING", payload: false });
@@ -22,7 +22,7 @@ export const addBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/bikes/addbike", reqObj);
+    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/addbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
     message.success("New Bike added successfully");
@@ -39,7 +39,7 @@ export const editBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/bikes/editbike", reqObj);
+    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/editbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
     message.success("Bike details updated successfully");
@@ -56,7 +56,7 @@ export const deleteBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/bikes/deletebike", reqObj);
+    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/deletebike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
     message.success("Bike deleted successfully");
