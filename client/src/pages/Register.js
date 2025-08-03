@@ -45,34 +45,53 @@ function Register() {
             <h1>User Registration</h1>
             <hr />
             <Form.Item
+              hasFeedback
               name="username"
               label="Username"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, max: 20, min:1 }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
+              hasFeedback
               name="password"
               label="Password"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, min: 6, max: 20 }]}
             >
-              <Input />
+              <Input.Password />
             </Form.Item>
             <Form.Item
+              hasFeedback
               name="cpassword"
               label="Confirm Password"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              dependencies={["password"]}
+              rules={[
+                { required: true, message: "Please confirm your password" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Passwords do not match!")
+                    );
+                  },
+                }),
+              ]}
             >
-              <Input />
+              <Input.Password />
             </Form.Item>
 
             <button className="btn1 mt-2 mb-3">Register</button>
             <br />
             <Link to={"/login"}>
-              <p className="mt-2">Click here to Login</p>
+              <p className="mt-2">User Login</p>
             </Link>
-            <Link to={"/login"}>
-              <p className="mt-2">Click here to Register as Admin</p>
+            <Link to={"/adminregister"}>
+              <p className="mt-2">Admin Register</p>
             </Link>
           </Form>
         </Col>

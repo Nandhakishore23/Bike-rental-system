@@ -45,5 +45,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://bike-rental-system-api.vercel.app"
+  "proxy": "https://bike-rental-system-api.vercel.app",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
 }

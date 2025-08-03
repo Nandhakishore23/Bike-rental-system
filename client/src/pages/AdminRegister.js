@@ -45,30 +45,49 @@ function Register() {
             <h1>Admin Registeration</h1>
             <hr />
             <Form.Item
+              hasFeedback
               name="username"
               label="Username"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, min:1, max:20 }]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+            <Form.Item hasFeedback name="email" label="Email" validateDebounce={1000} rules={[{ required: true, type: "email" }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+            <Form.Item hasFeedback name="phone" label="Phone" rules={[{ required: true , pattern: /^[0-9]{10}$/, message: "Please enter a valid phone number" }]}>
               <Input />
             </Form.Item>
             <Form.Item
+              hasFeedback
               name="password"
               label="Password"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, min:6, max:20}]}
             >
               <Input />
             </Form.Item>
             <Form.Item
+              hasFeedback
               name="cpassword"
               label="Confirm Password"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              dependencies={["password"]}
+              rules={[
+                { required: true, message: "Please confirm your password" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Passwords do not match!")
+                    );
+                  },
+                }),
+              ]}
             >
               <Input />
             </Form.Item>
@@ -76,12 +95,12 @@ function Register() {
             <button className="btn1 mt-2 mb-3">Register</button>
             <br />
             <Link to={"/login"}>
-              <p className="mt-2">Click here to Login as admin</p>
+              <p className="mt-2">User Login</p>
             </Link>
             <br />
 
             <Link to={"/register"}>
-              <p className="mt-2">Click here to register as user</p>
+              <p className="mt-2">User Register</p>
             </Link>
           </Form>
         </Col>

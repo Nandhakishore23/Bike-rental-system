@@ -45,16 +45,20 @@ function Login() {
             <h1>Admin Login</h1>
             <hr />
             <Form.Item
+              hasFeedback
               name="username"
               label="Username"
-              // rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, min:1, max : 20 }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
+              hasFeedback
               name="password"
               label="Password"
-              // rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true , min: 6, max:20}]}
             >
               <Input />
             </Form.Item>
@@ -62,10 +66,10 @@ function Login() {
             <button className="btn1 mt-2">Login</button>
             <br />
             <Link to={"/adminregister"}>
-              <p className="mt-2">Register as Admin</p>
+              <p className="mt-2">Admin Register</p>
             </Link>
             <Link to={"/login"}>
-              <p className="mt-2">Login</p>
+              <p className="mt-2">User Login</p>
             </Link>
           </Form>
         </Col>

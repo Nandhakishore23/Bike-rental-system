@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
 import { getAllCars } from "../redux/actions/carsActions";
-import { Col, Row, Divider, DatePicker, Checkbox } from "antd";
+import { Col, Row, Divider, DatePicker, Checkbox, Card } from "antd";
 import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import moment from "moment";
@@ -75,18 +75,22 @@ function Home() {
         {totalCars.map((car) => {
           return (
             <Col
-              lg={5}
-              sm={24}
-              xs={24}
+              lg={7}
+              sm={20}
+              xs={20}
               data-aos="flip-left"
               data-aos-duration="1500"
             >
-              <div className="car p-2 bs1">
+              <div style={{ marginBottom: "40px" }}></div>
+              <Card style={{ width: 300, borderRadius: "10px" , height: "270px" }}>
+
+              {/* <div className="car p-2 bs1"> */}
                 <img
                   src={car.image}
                   alt=""
                   className="carimg d-flex align-items-center"
-                />
+                  style={{marginBottom: "10px"}}
+                  />
 
                 <div className="car-content d-flex align-items-center justify-content-between">
                   <div className="text-left pl-2">
@@ -102,7 +106,8 @@ function Home() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              {/* </div> */}
+                  </Card>
             </Col>
           );
         })}
