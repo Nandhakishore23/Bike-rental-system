@@ -1,6 +1,6 @@
 import React from "react";
 // import DefaultLayout from "../components/DefaultLayout";
-import { Col, Form, Input } from "antd";
+import { Alert, Col, Form, Input } from "antd";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogin } from "../redux/actions/userActions";
@@ -19,7 +19,9 @@ function Login() {
     console.log(values);
   }
   return (
+    
     <div className="login">
+      
       {loading && <Spinner />}
       {/* <Row gutter={32} className="d-flex align-items-center"> */}
         {/* <Col lg={16} style={{ position: "relative" }}>
@@ -42,30 +44,34 @@ function Login() {
             className="login-form p-5"
             onFinish={onFinish}
           >
-            <h1>Login</h1>
+            <h1>User Login</h1>
             <hr />
             <Form.Item
+              hasFeedback
               name="username"
               label="Username"
-              rules={[{ required: true }]}
+              validateDebounce={1000}
+              rules={[{ required: true, max: 20, min:1 }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              name="password"
+              hasFeedback
               label="Password"
-              rules={[{ required: true }]}
+              name="password"
+              validateDebounce={1000}
+              rules={[{ required: true, min: 6, max: 20 }]}
             >
-              <Input />
+              <Input.Password />
             </Form.Item>
 
             <button className="btn1 mt-2">Login</button>
             <br />
             <Link to={"/register"}>
-              <p className="mt-2">Click here to Register</p>
+              <p className="mt-2">User Register</p>
             </Link>
             <Link to={"/adminlogin"}>
-              <p className="mt-2">Click here to  Login as admin</p>
+              <p className="mt-2">Admin Login</p>
             </Link>
           </Form>
         </Col>

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -28,28 +32,29 @@ p {
   color: #042743;
   box-shadow: none;
   border: 2px solid #2a64d7;
-  border-radius: 3px;
+  border-radius: 40px;
   background-color: #fff;
   background-image: linear-gradient(
-    45deg,
+    120deg,
     #2a64d7 50%,
     transparent 50%
   ) !important;
   width: 80px;
+  height: 45px;
   background-position: 100%;
   background-size: 400%;
-  transition: background 300ms ease-in-out;
+  transition: background 450ms ease-in;
 }
 .btn1:hover {
   background-position: 0;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 .header {
   height: 65px;
   padding: 10px;
   background-color: #042743;
 }
-.header .ant-btn {
+/* .header .ant-btn {
   border-color: #0ff1ed;
   color: #fff;
   box-shadow: none;
@@ -69,7 +74,7 @@ p {
 .header .ant-btn :hover {
   color: #000;
   background-position: 0;
-}
+} */
 
 .footer {
   margin-top: 100px;
@@ -109,10 +114,11 @@ p {
 .login {
   /* background-color: #fff; */
   background-color: #000;
-  background-image: url('https://wallpapercave.com/wp/wp5223113.jpg');
-  /* background-position: center; */
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-image: url('./images/bike1.jpg');
+  /* background-position-y: center; */
+  /* background-position-x: top; */
+  /* background-repeat: no-repeat; */
+  /* background-size:cover; */
   min-height: 100vh;
   padding-top: 80px;
 }
@@ -126,8 +132,9 @@ p {
 }
 
 .login-form input {
-  background-color: #f1f5f9;
-  border: none;
+  /* background-color: #f1f5f9; */
+  color: #000;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
 }
 .login-logo {

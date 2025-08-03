@@ -61,8 +61,8 @@ function DefaultLayout(props) {
                 </b>
               </h1>
 
-              <Dropdown overlay={menu} placement="bottom" className="mt-2">
-                <Button>{user ? user.username : admin.username}</Button>
+              <Dropdown overlay={menu} placement="bottom">
+                <button className="btn1" style={{ padding: "10px"}}>{user ? user.username : admin.username}</button>
               </Dropdown>
             </div>
           </Col>
