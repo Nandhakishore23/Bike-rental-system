@@ -24,7 +24,7 @@ export const getAllBookings = () => async (dispatch) => {
 
   try {
     const response = await API.get("https://bike-rental-system-api.vercel.app/api/bookings/getallbookings");
-    console.log(response);
+    // console.log(response);
     dispatch({ type: "GET_ALL_BOOKINGS", payload: response.data });
     dispatch({ type: "LOADING", payload: false });
   } catch (err) {
