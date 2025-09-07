@@ -127,6 +127,7 @@ import { getAllCars } from "../redux/actions/carsActions";
 import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import Chatbot from "../components/Chatbot";
 
 function Home() {
   const { cars } = useSelector((state) => state.carsReducer);
@@ -239,6 +240,7 @@ function Home() {
           </div>
         ))}
       </div>
+      <Chatbot />
     </DefaultLayout>
   );
 }
