@@ -13,6 +13,7 @@ const corsOption = {
 }
 
 app.use(cors(corsOption));
+app.options('*', cors(corsOption)); // Enable preflight for all routes
 
 const AdminLoginRoute = require("./routes/adminLogin");
 const UserRoute = require("./routes/user");
