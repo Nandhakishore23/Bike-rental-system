@@ -330,7 +330,7 @@ export default function Chatbot() {
 
     try {
       // Call backend API
-      const res = await fetch("/api/chatbot/ask", {
+      const res = await fetch("https://bike-rental-system-api.vercel.app/api/chatbot/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
