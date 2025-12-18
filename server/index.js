@@ -7,8 +7,9 @@ app.use(express.json());
 var cors = require("cors");
 
 const corsOption = {
-    origin: "*",
-    methods: 'GET,PUT,POST,DELETE,HEAD,PATCH,'
+    origin: ['https://bike-rental-system-two.vercel.app', 'http://localhost:3000'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
 }
 
 app.use(cors(corsOption));
