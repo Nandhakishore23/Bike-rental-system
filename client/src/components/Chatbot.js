@@ -329,8 +329,8 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      // 👇 Replace with your n8n webhook URL
-      const res = await fetch("https://n8n-a84j.onrender.com/webhook/chatbot", {
+      // Call backend API
+      const res = await fetch("/api/chatbot/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
@@ -339,9 +339,10 @@ export default function Chatbot() {
       const data = await res.json();
       setMessages([...newMessages, { sender: "bot", text: data.reply }]);
     } catch (err) {
+      console.error(err);
       setMessages([
         ...newMessages,
-        { sender: "bot", text: "⚠️ Sorry, something went wrong." },
+        { sender: "bot", text: "⚠️ Sorry, I'm having trouble connecting to the server." },
       ]);
     } finally {
       setLoading(false);
@@ -362,9 +363,8 @@ export default function Chatbot() {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-5 right-5 w-80 h-96 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-500 ${
-          isOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
-        }`}
+        className={`fixed bottom-5 right-5 w-80 h-96 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-500 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+          }`}
       >
         <div className="flex justify-between items-center bg-blue-600 text-white p-3">
           <span>BikeBuddy</span>
@@ -378,11 +378,10 @@ export default function Chatbot() {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`p-2 rounded-lg max-w-[75%] ${
-                msg.sender === "user"
-                  ? "ml-auto bg-blue-100 text-right"
-                  : "mr-auto bg-gray-200"
-              }`}
+              className={`p-2 rounded-lg max-w-[75%] ${msg.sender === "user"
+                ? "ml-auto bg-blue-100 text-right"
+                : "mr-auto bg-gray-200"
+                }`}
             >
               {msg.text}
             </div>

@@ -22,6 +22,7 @@ app.use("/api/bikes/", BikeRoute);
 app.use("/api/users/", UserRoute);
 app.use("/api/bookings/", BookingRoute);
 app.use("/api/admin/", AdminLoginRoute);
+app.use("/api/chatbot", require("./routes/chatbot"));
 
 app.get("/", (req, res) => res.send("Bikes"));
 
