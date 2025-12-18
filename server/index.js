@@ -7,12 +7,10 @@ app.use(express.json());
 var cors = require("cors");
 
 const corsOption = {
-    const corsOption = {
-        origin: ['https://bike-rental-system-two.vercel.app', 'http://localhost:3000'],
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "X-CSRF-Token", "X-Api-Version"]
-    }
+    origin: ['https://bike-rental-system-two.vercel.app', 'http://localhost:3000'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "X-CSRF-Token", "X-Api-Version"]
 }
 
 app.use(cors(corsOption));
