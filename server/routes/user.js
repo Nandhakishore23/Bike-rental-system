@@ -105,6 +105,7 @@ const router = express.Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const axios = require("axios");
+const { sendWelcomeEmail } = require("../utils/mailer");
 
 
 router.post("/register", async (req, res) => {
@@ -133,16 +134,9 @@ router.post("/register", async (req, res) => {
     const user = await newUser.save();
     // console.log("✅ New user registered:", user.email);
 
-    // 🔗 Call n8n webhook to send welcome email
-    try {
-      await axios.post("https://n8n-a84j.onrender.com/webhook/user-register", {
-        name: user.username,
-        email: user.email,
-      });
-      console.log("✅ Welcome email webhook triggered for:", user.email);
-    } catch (err) {
-      console.error("❌ Error triggering n8n webhook:", err.message);
-    }
+    // 📧 Send Welcome Email (Nodemailer)
+    // Runs in background, not awaiting to keep response fast
+    sendWelcomeEmail(user.email, user.username);
 
     res.status(200).json(user);
   } catch (err) {
