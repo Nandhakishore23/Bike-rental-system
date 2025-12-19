@@ -1,241 +1,132 @@
-// import React from "react";
-// import { Menu, Dropdown, Button, Space, Row, Col } from "antd";
-// import { Link } from "react-router-dom";
-// import "../index.css";
-// import Footer from "./footer/Footer";
-
-// function DefaultLayout(props) {
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const admin = JSON.parse(localStorage.getItem("admin"));
-//   const menu = (
-//     <Menu>
-//       <Menu.Item key={1}>
-//         <a href="/">Home</a>
-//       </Menu.Item>
-//       {user && (
-//         <Menu.Item key={2}>
-//           <a href="/userbookings">Bookings</a>
-//         </Menu.Item>
-//       )}
-//       {admin && (
-//         <Menu.Item key={3}>
-//           <a href="/admin">Admin</a>
-//         </Menu.Item>
-//       )}
-
-//       {user && (
-//         <Menu.Item
-//           key={4}
-//           onClick={() => {
-//             localStorage.clear();
-//             window.location.href = "/login";
-//           }}
-//         >
-//           <li style={{ color: "tomato" }}>Logout</li>
-//         </Menu.Item>
-//       )}
-//       {admin && (
-//         <Menu.Item
-//           key={5}
-//           onClick={() => {
-//             localStorage.clear();
-//             window.location.href = "/adminlogin";
-//           }}
-//         >
-//           <li style={{ color: "tomato" }}>Logout</li>
-//         </Menu.Item>
-//       )}
-//     </Menu>
-//   );
-//   return (
-//     <div>
-//       <div className="header">
-//         <Row gutter={16} justify="center">
-//           <Col lg={20} sm={24} xs={24}>
-//             <div className="d-flex justify-content-between">
-//               <h1>
-//                 <b>
-//                   <Link to="/" style={{ color: "#f1c40f" }}>
-//                     Bike
-//                   </Link>
-//                 </b>
-//               </h1>
-
-//               <Dropdown overlay={menu} placement="bottom">
-//                 <button className="btn1" style={{ padding: "10px"}}>{user ? user.username : admin.username}</button>
-//               </Dropdown>
-//             </div>
-//           </Col>
-//         </Row>
-//       </div>
-//       <div className="content">{props.children}</div>
-
-//       <div className="footer text-center">
-//         <Footer></Footer>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default DefaultLayout;
-
-
-
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer from "./footer/Footer";
+import { Menu as MenuIcon, X } from "lucide-react";
 
 function DefaultLayout({ children }) {
   const user = JSON.parse(localStorage.getItem("user"));
   const admin = JSON.parse(localStorage.getItem("admin"));
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = user ? "/login" : "/adminlogin";
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <header className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-extrabold text-yellow-500 tracking-wide">
-                🚴 Bike
-              </span>
-            </Link>
+    <div className="flex flex-col min-h-screen transition-colors duration-500 bg-zinc-950 font-sans selection:bg-yellow-500 selection:text-black">
 
-            {/* Desktop Menu */}
-            <nav className="hidden md:flex space-x-6 items-center">
-              <Link
-                to="/"
-                className="text-gray-700 hover:text-yellow-500 font-medium transition"
-              >
-                Home
-              </Link>
+      {/* Floating Island Navbar */}
+      <header className="fixed top-4 md:top-6 left-0 right-0 mx-auto w-[95%] md:w-[92%] max-w-7xl z-50">
+        <div className="glass-panel rounded-full px-4 md:px-6 py-3 flex justify-between items-center shadow-2xl transition-all duration-300 hover:border-yellow-500/30">
 
-              {user && (
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.5)] group-hover:scale-110 transition-transform">
+              <span className="text-black font-black text-lg">B</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white font-['Outfit']">
+              Ride<span className="text-yellow-500">X</span>
+            </span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-8 bg-white/5 px-8 py-2 rounded-full border border-white/5">
+            {[
+              { name: "Home", path: "/" },
+              user && { name: "Bookings", path: "/userbookings" },
+              admin && { name: "Admin", path: "/admin" },
+            ]
+              .filter(Boolean)
+              .map((item) => (
                 <Link
-                  to="/userbookings"
-                  className="text-gray-700 hover:text-yellow-500 font-medium transition"
+                  key={item.name}
+                  to={item.path}
+                  className={`text-sm font-medium transition-all ${isActive(item.path)
+                    ? "text-yellow-500 shadow-[0_10px_20px_-10px_rgba(234,179,8,0.5)] scale-105"
+                    : "text-zinc-400 hover:text-white"
+                    }`}
                 >
-                  Bookings
+                  {item.name}
                 </Link>
-              )}
+              ))}
+          </nav>
 
-              {admin && (
-                <Link
-                  to="/admin"
-                  className="text-gray-700 hover:text-yellow-500 font-medium transition"
-                >
-                  Admin
-                </Link>
-              )}
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 md:gap-4">
 
-              {(user || admin) && (
+            {/* User/Login */}
+            {(user || admin) ? (
+              <div className="flex items-center gap-3 pl-4 border-l border-zinc-800">
+                <div className="text-right hidden lg:block">
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Signed in</p>
+                  <p className="text-xs font-bold text-zinc-100 max-w-[80px] truncate">
+                    {user ? user.username : admin.username}
+                  </p>
+                </div>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
+                  className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-colors"
                 >
-                  Logout
+                  <X size={14} />
                 </button>
-              )}
-            </nav>
+              </div>
+            ) : (
+              <Link to="/login">
+                <button className="px-5 py-2 rounded-full bg-white text-zinc-900 text-xs font-bold hover:scale-105 transition-transform shadow-lg">
+                  LOGIN
+                </button>
+              </Link>
+            )}
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Toggle */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-yellow-500 hover:bg-gray-100 focus:outline-none"
+              className="md:hidden p-2 text-zinc-100"
             >
-              {menuOpen ? (
-                <svg
-                  className="h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
+              {menuOpen ? <X size={24} /> : <MenuIcon size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Menu Dropdown */}
         {menuOpen && (
-          <div className="md:hidden bg-white shadow-lg px-4 py-3 space-y-2">
-            <Link
-              to="/"
-              className="block text-gray-700 hover:text-yellow-500 font-medium"
-            >
-              Home
-            </Link>
-
-            {user && (
-              <Link
-                to="/userbookings"
-                className="block text-gray-700 hover:text-yellow-500 font-medium"
-              >
-                Bookings
-              </Link>
-            )}
-
-            {admin && (
-              <Link
-                to="/admin"
-                className="block text-gray-700 hover:text-yellow-500 font-medium"
-              >
-                Admin
-              </Link>
-            )}
-
-            {(user || admin) && (
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-              >
-                Logout
-              </button>
-            )}
+          <div className="mt-4 glass-panel rounded-3xl p-6 md:hidden animate-fade-up border border-white/10 mx-2">
+            <div className="flex flex-col gap-4">
+              <Link to="/" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">Home</Link>
+              {user && <Link to="/userbookings" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">My Bookings</Link>}
+              {admin && <Link to="/admin" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">Admin Panel</Link>}
+              <div className="h-px bg-zinc-800 my-2"></div>
+              {(user || admin) ? (
+                <button onClick={handleLogout} className="w-full py-3 bg-red-500 text-white rounded-xl font-bold">LOGOUT</button>
+              ) : (
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="w-full py-3 bg-white text-zinc-900 rounded-xl font-bold text-center">LOGIN</Link>
+              )}
+            </div>
           </div>
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
-        </div>
+      {/* Main Content Area */}
+      <main className="flex-grow pt-0 relative z-10">
+        {children}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-6 mt-auto">
-        <Footer />
+      {/* Simplified Footer */}
+      <footer className="py-8 bg-zinc-900/50 border-t border-zinc-800 mt-20">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-500">
+          <p>© 2024 RideX Rental System. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-white transition">Privacy</a>
+            <a href="#" className="hover:text-white transition">Terms</a>
+            <a href="#" className="hover:text-white transition">Support</a>
+          </div>
+        </div>
       </footer>
+
     </div>
   );
 }

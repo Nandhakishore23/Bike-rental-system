@@ -19,9 +19,9 @@
 // // // //     console.log(values);
 // // // //   }
 // // // //   return (
-    
+
 // // // //     <div className="login">
-      
+
 // // // //       {loading && <Spinner />}
 // // // //       {/* <Row gutter={32} className="d-flex align-items-center"> */}
 // // // //         {/* <Col lg={16} style={{ position: "relative" }}>
@@ -240,7 +240,7 @@
 // //   return (
 // //     // <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-200 p-6">
 // //     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-400 via-pink-300 to-purple-500 p-6">
-    
+
 
 // //       {loading && <Spinner />}
 
@@ -447,6 +447,7 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
+
       {/* Background Animated Blobs */}
       <div className="absolute -top-24 -left-24 w-80 h-80 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
       <div className="absolute top-40 -right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
@@ -459,7 +460,7 @@ function Login() {
         onSubmit={onFinish}
         className="relative z-10 w-full max-w-md p-8 rounded-3xl shadow-2xl 
                    backdrop-blur-2xl bg-white/10 border border-white/20
-                   transition-transform hover:scale-[1.02]"
+                   transition-transform hover:scale-[1.01]"
       >
         {/* Title */}
         <h1 className="text-4xl font-extrabold text-center text-white mb-2 tracking-wide">
