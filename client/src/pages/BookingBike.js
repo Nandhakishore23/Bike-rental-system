@@ -1,393 +1,3 @@
-// // import React, { useEffect, useState } from "react";
-// // import DefaultLayout from "../components/DefaultLayout";
-// // import { useLocation } from "react-router";
-// // import { useSelector, useDispatch } from "react-redux";
-// // import { getAllCars } from "../redux/actions/carsActions";
-// // import { BookCar } from "../redux/actions/bookingActions";
-// // import Spinner from "../components/Spinner";
-// // import { Row, Col, Divider, DatePicker, Checkbox, Modal } from "antd";
-// // import moment from "moment";
-// // import StripeCheckout from "react-stripe-checkout";
-// // const { RangePicker } = DatePicker;
-// // function BookingBike({ match }) {
-// //   const { cars } = useSelector((state) => state.carsReducer);
-// //   const { loading } = useSelector((state) => state.alertsReducer);
-
-// //   const dispatch = useDispatch();
-
-// //   const [car, setCar] = useState({});
-
-// //   const [from, setFrom] = useState();
-// //   const [to, setTo] = useState();
-// //   const [totalHours, setTotalHours] = useState();
-// //   const [ridingGears, setRidingGears] = useState(false);
-// //   const [totalAmount, setTotalAmount] = useState(0);
-// //   const [showModal, setShowModal] = useState(false);
-// //   const location = useLocation();
-// //   const path = location.pathname.split("/")[2];
-// //   useEffect(() => {
-// //     if (cars.length === 0) {
-// //       dispatch(getAllCars());
-// //     } else {
-// //       setCar(cars.find((o) => o._id === path));
-// //     }
-// //   }, [cars, path]);
-
-// //   useEffect(() => {
-// //     setTotalAmount(totalHours * car.rentPerHour);
-// //     if (ridingGears) {
-// //       setTotalAmount(totalAmount + 20 * totalHours);
-// //     }
-// //   }, [ridingGears, totalHours]);
-
-// //   function selectTimeSlot(values) {
-// //     setFrom(moment(values[0]).format("MMM DD yyyy HH:mm"));
-// //     setTo(moment(values[1]).format("MMM DD yyyy HH:mm"));
-
-// //     setTotalHours(values[1].diff(values[0], "hours"));
-// //   }
-
-// //   function onToken(token) {
-// //     const reqObj = {
-// //       token,
-// //       user: JSON.parse(localStorage.getItem("user"))._id,
-// //       car: car._id,
-// //       totalHours,
-// //       totalAmount,
-// //       ridingGearsRequired: ridingGears,
-// //       bookedTimeSlots: {
-// //         from,
-// //         to,
-// //       },
-// //     };
-// //     dispatch(BookCar(reqObj));
-// //   }
-
-// //   return (
-// //     <DefaultLayout>
-// //       {loading && <Spinner />}
-// //       <Row
-// //         justify="center"
-// //         className="d-flex align-items-center"
-// //         style={{ minHeight: "90vh" }}
-// //       >
-// //         <Col lg={10} sm={24} xs={24}>
-// //           <img
-// //             src={car.image}
-// //             alt=""
-// //             className="carimg2"
-// //             data-aos="flip-left"
-// //             data-aos-duration="1500"
-// //           />
-// //         </Col>
-// //         <Col lg={10} sm={24} xs={24} className="p-3 text-right">
-// //           <Divider
-// //             type="horizontal"
-// //             dashed
-// //             style={{ borderColor: "tomato", borderWidth: "0px" }}
-// //           >
-// //             Bike Info
-// //           </Divider>
-// //           <div style={{ textAlign: "right" }}>
-// //             <p>{car.name}</p>
-// //             <p>{car.rentPerHour} Rent Per hour /-</p>
-// //             <p>Fuel Type : {car.fuelType}</p>
-// //             <p>Max Persons : {car.capacity}</p>
-// //           </div>
-// //           <Divider
-// //             type="horizontal"
-// //             dashed
-// //             style={{ borderColor: "tomato", borderWidth: "0px" }}
-// //           >
-// //             Select Time Slot
-// //           </Divider>
-// //           <RangePicker
-// //             showTime={{ format: "HH:mm" }}
-// //             format="MMM DD YYYY HH:mm"
-// //             onChange={selectTimeSlot}
-// //             style={{ border: "1.5px solid #f1c40f" }}
-// //           />
-// //           <br />
-// //           <button
-// //             className="btn1 mt-2"
-// //             onClick={() => {
-// //               setShowModal(true);
-// //             }}
-// //             style={{ width: "150px", height: "40px" }}
-// //           >
-// //             See Booked Slots
-// //           </button>
-// //           {from && to && (
-// //             <div>
-// //               <p>
-// //                 Total Hours : <b>{totalHours}</b>
-// //               </p>
-// //               <p>
-// //                 Rent Per Hour : <b>{car.rentPerHour}</b>
-// //               </p>
-// //               <Checkbox
-// //                 onChange={(e) => {
-// //                   if (e.target.checked) {
-// //                     setRidingGears(true);
-// //                   } else {
-// //                     setRidingGears(false);
-// //                   }
-// //                 }}
-// //               >
-// //                 Require Riding Gears
-// //               </Checkbox>
-// //               <h3>Total Amount : {totalAmount}</h3>
-// //               <StripeCheckout
-// //                 shippingAddress
-// //                 token={onToken}
-// //                 amount={totalAmount * 100}
-// //                 currency="INR"
-// //                 stripeKey="pk_test_51LChp4SE5wcmqxP8nYVqd0iLIUbj35nA1s9pmjTEROTdLHZZIujCcQX4uXSpdZSJJO62s4IHbfpNenR49GN1Zbem00p8aLkQ4N"
-// //               >
-// //                 <button className="btn1">Book Now</button>
-// //               </StripeCheckout>
-// //             </div>
-// //           )}
-// //         </Col>
-// //       </Row>
-
-// //       {car.name && (
-// //         <Modal
-// //           visible={showModal}
-// //           closable={false}
-// //           footer={false}
-// //           title="Booked time slots"
-// //         >
-// //           <div className="p-2">
-// //             {car.bookedTimeSlots.map((slot) => {
-// //               return (
-// //                 <button className="btn1 mt-2">
-// //                   {slot.from} - {slot.to}
-// //                 </button>
-// //               );
-// //             })}
-
-// //             <div className="text-right mt-5">
-// //               <button
-// //                 className="btn1"
-// //                 onClick={() => {
-// //                   setShowModal(false);
-// //                 }}
-// //               >
-// //                 CLOSE
-// //               </button>
-// //             </div>
-// //           </div>
-// //         </Modal>
-// //       )}
-// //     </DefaultLayout>
-// //   );
-// // }
-
-// // export default BookingBike;
-
-
-// import React, { useEffect, useState } from "react";
-// import DefaultLayout from "../components/DefaultLayout";
-// import { useLocation } from "react-router";
-// import { useSelector, useDispatch } from "react-redux";
-// import { getAllCars } from "../redux/actions/carsActions";
-// import { BookCar } from "../redux/actions/bookingActions";
-// import Spinner from "../components/Spinner";
-// import moment from "moment";
-// import StripeCheckout from "react-stripe-checkout";
-
-// function BookingBike() {
-//   const { cars } = useSelector((state) => state.carsReducer);
-//   const { loading } = useSelector((state) => state.alertsReducer);
-
-//   const dispatch = useDispatch();
-
-//   const [car, setCar] = useState({});
-//   const [from, setFrom] = useState();
-//   const [to, setTo] = useState();
-//   const [totalHours, setTotalHours] = useState(0);
-//   const [ridingGears, setRidingGears] = useState(false);
-//   const [totalAmount, setTotalAmount] = useState(0);
-//   const [showModal, setShowModal] = useState(false);
-
-//   const location = useLocation();
-//   const path = location.pathname.split("/")[2];
-
-//   useEffect(() => {
-//     if (cars.length === 0) {
-//       dispatch(getAllCars());
-//     } else {
-//       setCar(cars.find((o) => o._id === path));
-//     }
-//   }, [cars, path, dispatch]);
-
-//   useEffect(() => {
-//     if (car && totalHours) {
-//       let amount = totalHours * car.rentPerHour;
-//       if (ridingGears) {
-//         amount += 20 * totalHours;
-//       }
-//       setTotalAmount(amount);
-//     }
-//   }, [ridingGears, totalHours, car]);
-
-//   function handleTimeChange(type, value) {
-//     if (type === "from") {
-//       setFrom(value);
-//     } else {
-//       setTo(value);
-//     }
-
-//     if (from && to) {
-//       const start = moment(from);
-//       const end = moment(to);
-//       setTotalHours(end.diff(start, "hours"));
-//     }
-//   }
-
-//   function onToken(token) {
-//     const reqObj = {
-//       token,
-//       user: JSON.parse(localStorage.getItem("user"))._id,
-//       car: car._id,
-//       totalHours,
-//       totalAmount,
-//       ridingGearsRequired: ridingGears,
-//       bookedTimeSlots: {
-//         from,
-//         to,
-//       },
-//     };
-//     dispatch(BookCar(reqObj));
-//   }
-
-//   return (
-//     <DefaultLayout>
-//       {loading && <Spinner />}
-
-//       <div className="flex flex-col lg:flex-row items-center justify-center min-h-[90vh] gap-6">
-//         {/* Bike Image */}
-//         <div className="lg:w-1/2 w-full flex justify-center">
-//           <img
-//             src={car.image}
-//             alt={car.name}
-//             className="max-w-sm rounded-lg shadow-lg"
-//             data-aos="flip-left"
-//             data-aos-duration="1500"
-//           />
-//         </div>
-
-//         {/* Bike Info */}
-//         <div className="lg:w-1/2 w-full p-4 text-right">
-//           <h2 className="text-lg font-semibold border-b border-dashed border-gray-400 mb-2 pb-1">
-//             Bike Info
-//           </h2>
-//           <div>
-//             <p>{car.name}</p>
-//             <p>{car.rentPerHour} Rent Per hour /-</p>
-//             <p>Fuel Type : {car.fuelType}</p>
-//             <p>Max Persons : {car.capacity}</p>
-//           </div>
-
-//           {/* Time Slot */}
-//           <h2 className="text-lg font-semibold border-b border-dashed border-gray-400 mt-6 mb-2 pb-1">
-//             Select Time Slot
-//           </h2>
-//           <div className="flex gap-3 mt-2">
-//             <input
-//               type="datetime-local"
-//               className="border border-yellow-400 rounded px-3 py-2 w-full focus:ring focus:ring-yellow-500"
-//               onChange={(e) => handleTimeChange("from", e.target.value)}
-//             />
-//             <input
-//               type="datetime-local"
-//               className="border border-yellow-400 rounded px-3 py-2 w-full focus:ring focus:ring-yellow-500"
-//               onChange={(e) => handleTimeChange("to", e.target.value)}
-//             />
-//           </div>
-
-//           {/* See booked slots */}
-//           <button
-//             className="bg-gray-800 text-white px-4 py-2 rounded mt-3 hover:bg-gray-900"
-//             onClick={() => setShowModal(true)}
-//           >
-//             See Booked Slots
-//           </button>
-
-//           {from && to && (
-//             <div className="mt-4 space-y-2">
-//               <p>
-//                 Total Hours : <b>{totalHours}</b>
-//               </p>
-//               <p>
-//                 Rent Per Hour : <b>{car.rentPerHour}</b>
-//               </p>
-
-//               {/* Riding Gears Checkbox */}
-//               <label className="flex items-center justify-end gap-2 cursor-pointer">
-//                 <input
-//                   type="checkbox"
-//                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-//                   onChange={(e) => setRidingGears(e.target.checked)}
-//                 />
-//                 <span>Require Riding Gears</span>
-//               </label>
-
-//               <h3 className="text-lg font-semibold">
-//                 Total Amount : ₹{totalAmount}
-//               </h3>
-
-//               {/* Stripe Checkout */}
-//               <StripeCheckout
-//                 shippingAddress
-//                 token={onToken}
-//                 amount={totalAmount * 100}
-//                 currency="INR"
-//                 stripeKey="pk_test_51LChp4SE5wcmqxP8nYVqd0iLIUbj35nA1s9pmjTEROTdLHZZIujCcQX4uXSpdZSJJO62s4IHbfpNenR49GN1Zbem00p8aLkQ4N"
-//               >
-//                 <button className="bg-blue-600 text-white px-6 py-2 rounded mt-2 hover:bg-blue-700 transition">
-//                   Book Now
-//                 </button>
-//               </StripeCheckout>
-//             </div>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Modal */}
-//       {car.name && showModal && (
-//         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-//           <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-//             <h2 className="text-lg font-semibold mb-4">Booked Time Slots</h2>
-//             <div className="space-y-2">
-//               {car.bookedTimeSlots?.map((slot, idx) => (
-//                 <button
-//                   key={idx}
-//                   className="bg-blue-500 text-white px-3 py-1 rounded w-full"
-//                 >
-//                   {slot.from} - {slot.to}
-//                 </button>
-//               ))}
-//             </div>
-//             <div className="text-right mt-5">
-//               <button
-//                 className="bg-red-500 text-white px-4 py-2 rounded"
-//                 onClick={() => setShowModal(false)}
-//               >
-//                 CLOSE
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </DefaultLayout>
-//   );
-// }
-
-// export default BookingBike;
-
-
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "../components/DefaultLayout";
 import { useLocation } from "react-router";
@@ -397,11 +7,12 @@ import { BookCar } from "../redux/actions/bookingActions";
 import Spinner from "../components/Spinner";
 import moment from "moment";
 import StripeCheckout from "react-stripe-checkout";
+import { Calendar, Clock, Shield, Fuel, Users, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function BookingBike() {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
-
   const dispatch = useDispatch();
 
   const [car, setCar] = useState({});
@@ -416,6 +27,7 @@ function BookingBike() {
   const path = location.pathname.split("/")[2];
 
   useEffect(() => {
+    window.scrollTo(0, 0); // Ensure page starts at top
     if (cars.length === 0) {
       dispatch(getAllCars());
     } else {
@@ -424,12 +36,25 @@ function BookingBike() {
   }, [cars, path, dispatch]);
 
   useEffect(() => {
-    if (car && totalHours) {
+    if (from && to) {
+      const start = moment(from);
+      const end = moment(to);
+      const hours = end.diff(start, "hours");
+      setTotalHours(hours > 0 ? hours : 0);
+    } else {
+      setTotalHours(0);
+    }
+  }, [from, to]);
+
+  useEffect(() => {
+    if (car && totalHours > 0) {
       let amount = totalHours * car.rentPerHour;
       if (ridingGears) {
         amount += 20 * totalHours;
       }
       setTotalAmount(amount);
+    } else {
+      setTotalAmount(0);
     }
   }, [ridingGears, totalHours, car]);
 
@@ -438,12 +63,6 @@ function BookingBike() {
       setFrom(value);
     } else {
       setTo(value);
-    }
-
-    if (from && to) {
-      const start = moment(from);
-      const end = moment(to);
-      setTotalHours(end.diff(start, "hours"));
     }
   }
 
@@ -467,121 +86,169 @@ function BookingBike() {
     <DefaultLayout>
       {loading && <Spinner />}
 
-      <div className="flex flex-col lg:flex-row items-start justify-center min-h-[90vh] gap-8 px-4 py-6">
-        {/* Bike Image */}
-        <div className="lg:w-1/2 w-full flex justify-center">
-          <img
-            src={car.image}
-            alt={car.name}
-            className="w-full max-w-md rounded-xl shadow-lg object-cover"
-          />
-        </div>
+      {/* Background Ambience */}
+      <div className="fixed inset-0 z-0 bg-zinc-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-black"></div>
+        <img
+          src={car.image}
+          className="w-full h-full object-cover opacity-10 blur-3xl scale-110"
+          alt="Ambience"
+        />
+      </div>
 
-        {/* Booking Section */}
-        <div className="lg:w-1/2 w-full bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4">
-            {car.name || "Bike Info"}
-          </h2>
+      <div className="relative z-10 min-h-screen flex items-start justify-center p-6 pt-[140px] md:pt-[180px]">
+        <div className="bg-zinc-900/80 backdrop-blur-2xl border border-white/5 rounded-3xl shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col lg:flex-row relative">
 
-          <div className="space-y-2 text-gray-700">
-            <p>
-              <span className="font-medium">Rent:</span> ₹{car.rentPerHour} / hr
-            </p>
-            <p>
-              <span className="font-medium">Fuel:</span> {car.fuelType}
-            </p>
-            <p>
-              <span className="font-medium">Capacity:</span> {car.capacity} persons
-            </p>
-          </div>
-
-          {/* Time Slot */}
-          <h2 className="text-lg font-semibold text-gray-800 mt-6">
-            Select Time Slot
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <input
-              type="datetime-local"
-              className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-              onChange={(e) => handleTimeChange("from", e.target.value)}
-            />
-            <input
-              type="datetime-local"
-              className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-              onChange={(e) => handleTimeChange("to", e.target.value)}
-            />
-          </div>
-
-          {/* See booked slots */}
-          <button
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg mt-4 hover:bg-gray-900 transition w-full sm:w-auto"
-            onClick={() => setShowModal(true)}
-          >
-            See Booked Slots
-          </button>
-
-          {from && to && (
-            <div className="mt-6 space-y-3">
-              <p className="text-gray-700">
-                Total Hours: <b>{totalHours}</b>
-              </p>
-              <p className="text-gray-700">
-                Rent Per Hour: <b>₹{car.rentPerHour}</b>
-              </p>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="h-5 w-5 text-blue-600 border-gray-300 rounded"
-                  onChange={(e) => setRidingGears(e.target.checked)}
-                />
-                <span>Require Riding Gears</span>
-              </label>
-
-              <h3 className="text-lg font-bold text-gray-900">
-                Total Amount : ₹{totalAmount}
-              </h3>
-
-              {/* Stripe Checkout */}
-              <StripeCheckout
-                shippingAddress
-                token={onToken}
-                amount={totalAmount * 100}
-                currency="INR"
-                stripeKey="pk_test_51LChp4SE5wcmqxP8nYVqd0iLIUbj35nA1s9pmjTEROTdLHZZIujCcQX4uXSpdZSJJO62s4IHbfpNenR49GN1Zbem00p8aLkQ4N"
-              >
-                <button className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg mt-2 hover:bg-blue-700 transition">
-                  🚴 Book Now
-                </button>
-              </StripeCheckout>
+          {/* Left: Visuals - Fixed Aspect/Height consistency */}
+          <div className="lg:w-1/2 relative bg-black flex flex-col justify-between h-96 lg:h-auto lg:min-h-[600px]">
+            <div className="absolute inset-0 z-0">
+              <img src={car.image} alt={car.name} className="w-full h-full object-cover opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
             </div>
-          )}
+
+            <div className="relative z-10 p-8">
+              <Link to="/" className="inline-flex items-center text-white/70 hover:text-white transition gap-2 mb-6">
+                <ArrowLeft size={20} /> Back to Fleet
+              </Link>
+            </div>
+
+            <div className="relative z-10 p-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 text-xs font-bold uppercase tracking-wider mb-4">
+                Premium Selection
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-white mb-2 leading-tight">{car.name}</h1>
+              <div className="flex flex-wrap gap-4 text-zinc-300 text-sm font-medium">
+                <div className="flex items-center gap-2"><Fuel size={16} className="text-yellow-500" /> {car.fuelType}</div>
+                <div className="flex items-center gap-2"><Users size={16} className="text-yellow-500" /> {car.capacity} Seats</div>
+                <div className="flex items-center gap-2"><Shield size={16} className="text-emerald-500" /> Insured</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Booking Form */}
+          <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2 font-['Outfit']">Configure Your Ride</h2>
+              <p className="text-zinc-500">Select your dates to check availability and calculate exact pricing.</p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Date Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-zinc-800/50 p-4 rounded-xl border border-zinc-700/50">
+                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Pick-up</label>
+                  <input
+                    type="datetime-local"
+                    className="w-full bg-transparent text-white border-none focus:ring-0 p-0 font-mono text-sm"
+                    style={{ colorScheme: "dark" }}
+                    onChange={(e) => handleTimeChange("from", e.target.value)}
+                  />
+                </div>
+                <div className="bg-zinc-800/50 p-4 rounded-xl border border-zinc-700/50">
+                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Drop-off</label>
+                  <input
+                    type="datetime-local"
+                    className="w-full bg-transparent text-white border-none focus:ring-0 p-0 font-mono text-sm"
+                    style={{ colorScheme: "dark" }}
+                    onChange={(e) => handleTimeChange("to", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Extras */}
+              <button
+                onClick={() => setRidingGears(!ridingGears)}
+                className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${ridingGears ? 'bg-yellow-500/10 border-yellow-500/50' : 'bg-zinc-800/50 border-zinc-700/50 hover:border-zinc-600'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <Shield size={20} className={ridingGears ? "text-yellow-500" : "text-zinc-500"} />
+                  <div className="text-left">
+                    <p className={`font-bold ${ridingGears ? 'text-yellow-400' : 'text-zinc-300'}`}>Safety Gear Package</p>
+                    <p className="text-xs text-zinc-500">+₹20/hr • Helmet, Gloves, Pads</p>
+                  </div>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${ridingGears ? 'border-yellow-500 bg-yellow-500' : 'border-zinc-600'}`}>
+                  {ridingGears && <div className="w-2 h-2 rounded-full bg-black"></div>}
+                </div>
+              </button>
+
+              <button
+                className="text-sm text-zinc-500 hover:text-white underline decoration-zinc-700 underline-offset-4"
+                onClick={() => setShowModal(true)}
+              >
+                View Unavailable Time Slots
+              </button>
+
+              {/* Total Summary - Always Visible */}
+              <div className="bg-black/40 rounded-2xl p-6 border border-white/5 animate-fade-up">
+                {from && to && totalHours > 0 ? (
+                  <>
+                    <div className="flex justify-between mb-2 text-zinc-400 text-sm">
+                      <span>Rate ({totalHours} hrs)</span>
+                      <span>₹{car.rentPerHour * totalHours}</span>
+                    </div>
+                    {ridingGears && (
+                      <div className="flex justify-between mb-4 text-zinc-400 text-sm">
+                        <span>Gear Package</span>
+                        <span>₹{20 * totalHours}</span>
+                      </div>
+                    )}
+                    <div className="h-px bg-zinc-800 my-4"></div>
+                    <div className="flex justify-between items-end">
+                      <span className="text-lg font-bold text-white">Total</span>
+                      <span className="text-3xl font-black text-yellow-400">₹{totalAmount}</span>
+                    </div>
+
+                    <StripeCheckout
+                      shippingAddress
+                      token={onToken}
+                      amount={totalAmount * 100}
+                      currency="INR"
+                      stripeKey="pk_test_51LChp4SE5wcmqxP8nYVqd0iLIUbj35nA1s9pmjTEROTdLHZZIujCcQX4uXSpdZSJJO62s4IHbfpNenR49GN1Zbem00p8aLkQ4N"
+                    >
+                      <button className="w-full mt-6 bg-yellow-500 hover:bg-yellow-400 text-black font-black py-4 rounded-xl text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(250,204,21,0.3)]">
+                        CONFIRM & PAY
+                      </button>
+                    </StripeCheckout>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-center py-4 space-y-3">
+                      <p className="text-zinc-500 text-sm">Select pick-up and drop-off dates to calculate the total fare.</p>
+                      <div className="h-px bg-zinc-800 my-4"></div>
+                      <button
+                        disabled
+                        className="w-full bg-zinc-800 text-zinc-500 font-bold py-4 rounded-xl text-lg cursor-not-allowed border border-zinc-700 hover:bg-zinc-800 transition"
+                      >
+                        SELECT DATES FIRST
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Modal */}
-      {car.name && showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">
-              Booked Time Slots
-            </h2>
-            <div className="space-y-2">
-              {car.bookedTimeSlots?.map((slot, idx) => (
-                <div
-                  key={idx}
-                  className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg text-center font-medium"
-                >
-                  {slot.from} - {slot.to}
+      {showModal && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white font-['Outfit']">Unavailable Slots</h3>
+              <button onClick={() => setShowModal(false)} className="bg-zinc-800 p-2 rounded-full text-zinc-400 hover:text-white"><ArrowLeft size={16} /></button>
+            </div>
+            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              {car.bookedTimeSlots.map((slot, idx) => (
+                <div key={idx} className="bg-black/50 border border-zinc-800 p-3 rounded-lg flex items-center gap-3 text-zinc-400">
+                  <Clock size={16} className="text-red-500" />
+                  <span className="font-mono text-sm">{slot.from} — {slot.to}</span>
                 </div>
               ))}
+              {car.bookedTimeSlots.length === 0 && <p className="text-zinc-500 text-center py-4">No bookings yet. You're the first!</p>}
             </div>
-            <button
-              className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-              onClick={() => setShowModal(false)}
-            >
-              ✕
-            </button>
           </div>
         </div>
       )}

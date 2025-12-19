@@ -3,157 +3,233 @@ import { useDispatch, useSelector } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
 import { editBike, getAllCars } from "../redux/actions/carsActions";
+import { Link } from "react-router-dom";
+import {
+  ArrowLeft,
+  Save,
+  Bike,
+  DollarSign,
+  Users,
+  Fuel,
+  Link as LinkIcon
+} from "lucide-react";
 
 function EditBike({ match }) {
   const { cars } = useSelector((state) => state.carsReducer);
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.alertsReducer);
-  const [car, setCar] = useState(null);
-  const [totalCars, setTotalCars] = useState([]);
+
+  // State for form fields (controlled for live preview)
+  const [formData, setFormData] = useState({
+    name: "",
+    image: "",
+    rentPerHour: "",
+    capacity: "",
+    fuelType: ""
+  });
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     if (cars.length === 0) {
       dispatch(getAllCars());
     } else {
-      setTotalCars(cars);
-      setCar(cars.find((o) => o._id === match.params.carid));
+      const currentCar = cars.find((o) => o._id === match.params.carid);
+      if (currentCar) {
+        setFormData({
+          _id: currentCar._id,
+          name: currentCar.name,
+          image: currentCar.image,
+          rentPerHour: currentCar.rentPerHour,
+          capacity: currentCar.capacity,
+          fuelType: currentCar.fuelType
+        });
+        setIsLoaded(true);
+      }
     }
   }, [cars, dispatch, match.params.carid]);
 
+  function handleInputChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  }
+
   function onSubmit(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const values = Object.fromEntries(formData.entries());
-    values._id = car._id;
-    dispatch(editBike(values));
+    dispatch(editBike(formData));
   }
 
   return (
     <DefaultLayout>
       {loading && <Spinner />}
 
-      <div className="flex justify-center items-center mt-8 px-4">
-        <div className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
-          {totalCars.length > 0 && car && (
-            <form onSubmit={onSubmit} className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                ✏️ Edit Bike
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Update details for{" "}
-                <span className="font-semibold">{car.name}</span>
-              </p>
-              <hr className="border-gray-200 dark:border-gray-700" />
+      <div className="min-h-screen bg-zinc-950 pt-32 px-4 pb-20">
+        <div className="max-w-7xl mx-auto">
 
-              {/* Car Name */}
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Bike Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  defaultValue={car.name}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 
-                             focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                />
+          {/* Header */}
+          <div className="flex items-center gap-4 mb-8 text-white">
+            <Link to="/admin" className="p-3 rounded-full bg-zinc-900 border border-zinc-800 hover:border-white/20 hover:bg-zinc-800 transition-all">
+              <ArrowLeft size={20} />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold font-['Outfit']">Edit Vehicle</h1>
+              <p className="text-zinc-500 text-sm">Update fleet details and specifications</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+            {/* Edit Form */}
+            <div className="w-full lg:w-2/3 bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-6 md:p-8 animate-fade-up">
+              <form onSubmit={onSubmit} className="space-y-6">
+
+                {/* Name */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                    <Bike size={14} /> Vehicle Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full bg-black/40 border border-zinc-800 focus:border-yellow-500/50 rounded-xl px-4 py-3 text-white outline-none transition-all placeholder:text-zinc-700 font-['Outfit'] text-lg"
+                    placeholder="e.g. BMW S1000RR"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Rent */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                      <DollarSign size={14} /> Rent Per Hour
+                    </label>
+                    <input
+                      type="number"
+                      name="rentPerHour"
+                      value={formData.rentPerHour}
+                      onChange={handleInputChange}
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-yellow-500/50 rounded-xl px-4 py-3 text-white outline-none transition-all"
+                      placeholder="0"
+                      required
+                    />
+                  </div>
+
+                  {/* Capacity */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                      <Users size={14} /> Capacity
+                    </label>
+                    <input
+                      type="number"
+                      name="capacity"
+                      value={formData.capacity}
+                      onChange={handleInputChange}
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-yellow-500/50 rounded-xl px-4 py-3 text-white outline-none transition-all"
+                      placeholder="e.g. 2"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Fuel */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                      <Fuel size={14} /> Fuel Type
+                    </label>
+                    <input
+                      type="text"
+                      name="fuelType"
+                      value={formData.fuelType}
+                      onChange={handleInputChange}
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-yellow-500/50 rounded-xl px-4 py-3 text-white outline-none transition-all"
+                      placeholder="e.g. Petrol"
+                      required
+                    />
+                  </div>
+
+                  {/* Image URL */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                      <LinkIcon size={14} /> Image URL
+                    </label>
+                    <input
+                      type="url"
+                      name="image"
+                      value={formData.image}
+                      onChange={handleInputChange}
+                      className="w-full bg-black/40 border border-zinc-800 focus:border-yellow-500/50 rounded-xl px-4 py-3 text-white outline-none transition-all text-sm"
+                      placeholder="https://..."
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/5 flex items-center justify-end">
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold py-3 px-8 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2"
+                  >
+                    <Save size={18} /> Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Live Preview */}
+            <div className="w-full lg:w-1/3 space-y-4 animate-fade-up animation-delay-200">
+              <h3 className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-2">Live Preview</h3>
+
+              {/* Preview Card */}
+              <div className="bg-zinc-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative group">
+                <div className="relative h-64 overflow-hidden bg-black">
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent z-10 opacity-80"></div>
+                  {formData.image ? (
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      onError={(e) => e.target.style.display = 'none'} // Hide broken images
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-900">
+                      <Bike size={48} />
+                    </div>
+                  )}
+
+                  <div className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                    <span className="text-yellow-400 font-bold text-sm">₹{formData.rentPerHour || '0'}</span>
+                    <span className="text-zinc-500 text-xs">/hr</span>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 z-20">
+                    <p className="text-zinc-400 text-xs tracking-widest uppercase mb-1">{formData.fuelType || 'Fuel Type'}</p>
+                    <h3 className="text-2xl font-bold text-white font-['Outfit']">{formData.name || 'Vehicle Name'}</h3>
+                  </div>
+                </div>
+
+                <div className="p-4 grid grid-cols-2 gap-4 border-t border-white/5 bg-zinc-950">
+                  <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                    <Users size={14} className="text-yellow-500" />
+                    <span>{formData.capacity || '0'} Seats</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-zinc-400 text-sm justify-end">
+                    <span className="text-emerald-500 text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Available</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Image URL */}
-              <div>
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Image URL
-                </label>
-                <input
-                  type="url"
-                  name="image"
-                  defaultValue={car.image}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 
-                             focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                />
+              <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl flex gap-3 text-blue-300 text-sm">
+                <div className="mt-1"><Save size={16} /></div>
+                <p>Tip: Changes are reflected in real-time above. Click <strong>Save Changes</strong> to apply them to the live database.</p>
               </div>
+            </div>
 
-              {/* Rent Per Hour */}
-              <div>
-                <label
-                  htmlFor="rentPerHour"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Rent per Hour
-                </label>
-                <input
-                  type="number"
-                  name="rentPerHour"
-                  defaultValue={car.rentPerHour}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 
-                             focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                />
-              </div>
-
-              {/* Capacity */}
-              <div>
-                <label
-                  htmlFor="capacity"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Capacity
-                </label>
-                <input
-                  type="number"
-                  name="capacity"
-                  defaultValue={car.capacity}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 
-                             focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                />
-              </div>
-
-              {/* Fuel Type */}
-              <div>
-                <label
-                  htmlFor="fuelType"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Fuel Type
-                </label>
-                <input
-                  type="text"
-                  name="fuelType"
-                  defaultValue={car.fuelType}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 
-                             focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="px-6 py-2 rounded-lg font-medium text-white 
-                             bg-gradient-to-r from-green-500 to-teal-500 
-                             shadow-md hover:shadow-lg hover:from-teal-500 hover:to-green-600 
-                             transition-all duration-300"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          )}
+          </div>
         </div>
       </div>
     </DefaultLayout>

@@ -1,125 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import DefaultLayout from "../components/DefaultLayout";
-// import { getAllCars } from "../redux/actions/carsActions";
-// import { Col, Row, Divider, DatePicker, Checkbox, Card } from "antd";
-// import { Link } from "react-router-dom";
-// import Spinner from "../components/Spinner";
-// import moment from "moment";
-// const { RangePicker } = DatePicker;
-// function Home() {
-//   const { cars } = useSelector((state) => state.carsReducer);
-//   const { loading } = useSelector((state) => state.alertsReducer);
-//   const [totalCars, setTotalcars] = useState([]);
-//   const dispatch = useDispatch();
-
-//   useEffect(() => {
-//     dispatch(getAllCars());
-//   }, []);
-
-//   useEffect(() => {
-//     setTotalcars(cars);
-//   }, [cars]);
-
-//   function setFilter(values) {
-//     var selectedFrom = moment(values[0], "MMM DD yyyy HH:mm");
-//     var selectedTo = moment(values[1], "MMM DD yyyy HH:mm");
-
-//     var temp = [];
-
-//     for (var car of cars) {
-//       if (car.bookedTimeSlots.length === 0) {
-//         temp.push(car);
-//       } else {
-//         var p = true;
-//         for (var booking of car.bookedTimeSlots) {
-//           if (
-//             selectedFrom.isBetween(booking.from, booking.to) ||
-//             selectedTo.isBetween(booking.from, booking.to) ||
-//             moment(booking.from).isBetween(selectedFrom, selectedTo) ||
-//             moment(booking.to).isBetween(selectedFrom, selectedTo)
-//           ) {
-//             p = false;
-//           } else {
-//           }
-//         }
-//         if (p) {
-//           temp.push(car);
-//         }
-//       }
-//     }
-
-//     setTotalcars(temp);
-//   }
-
-//   return (
-//     <DefaultLayout>
-//       <Row className="mt-3" justify="center">
-//         <Col lg={20} sm={24} className="d-flex justify-content-left">
-//           <p>
-//             <b>Check Availability </b> :{" "}
-//           </p>
-//           <br />
-//           <RangePicker
-//             showTime={{ format: "HH:mm" }}
-//             format="MMM DD yyyy HH:mm"
-//             onChange={setFilter}
-//             style={{ border: "1.5px solid #f1c40f" }}
-//           />
-//         </Col>
-//       </Row>
-
-//       {loading === true && <Spinner />}
-
-//       <Row justify="center" gutter={16}>
-//         {totalCars.map((car) => {
-//           return (
-//             <Col
-//               lg={7}
-//               sm={20}
-//               xs={20}
-//               data-aos="flip-left"
-//               data-aos-duration="1500"
-//             >
-//               <div style={{ marginBottom: "40px" }}></div>
-//               <Card style={{ width: 300, borderRadius: "10px" , height: "270px" }}>
-
-//               {/* <div className="car p-2 bs1"> */}
-//                 <img
-//                   src={car.image}
-//                   alt=""
-//                   className="carimg d-flex align-items-center"
-//                   style={{marginBottom: "10px"}}
-//                   />
-
-//                 <div className="car-content d-flex align-items-center justify-content-between">
-//                   <div className="text-left pl-2">
-//                     <p>
-//                       <b>{car.name}</b>
-//                     </p>
-//                     <p> Rent Per Hour: ₹{car.rentPerHour}</p>
-//                   </div>
-
-//                   <div>
-//                     <Link to={`/booking/${car._id}`}>
-//                       <button className="btn1 mr-2">Book Now</button>
-//                     </Link>
-//                   </div>
-//                 </div>
-//               {/* </div> */}
-//                   </Card>
-//             </Col>
-//           );
-//         })}
-//       </Row>
-//     </DefaultLayout>
-//   );
-// }
-
-// export default Home;
-
-
-
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
@@ -128,15 +6,16 @@ import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Chatbot from "../components/Chatbot";
+import { DatePicker } from "antd";
+import { Zap, Shield, Clock, ArrowRight } from "lucide-react";
+
+const { RangePicker } = DatePicker;
 
 function Home() {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
   const [totalCars, setTotalcars] = useState([]);
   const dispatch = useDispatch();
-
-  const [from, setFrom] = useState();
-  const [to, setTo] = useState();
 
   useEffect(() => {
     dispatch(getAllCars());
@@ -146,29 +25,36 @@ function Home() {
     setTotalcars(cars);
   }, [cars]);
 
-  function setFilter() {
-    if (!from || !to) return;
-    const selectedFrom = moment(from);
-    const selectedTo = moment(to);
+  function setFilter(values) {
+    if (!values || values.length < 2) {
+      setTotalcars(cars);
+      return;
+    }
+    const selectedFrom = moment(values[0].format("MMM DD yyyy HH:mm"));
+    const selectedTo = moment(values[1].format("MMM DD yyyy HH:mm"));
 
     const temp = [];
-    for (let car of cars) {
+    for (const car of cars) {
       if (car.bookedTimeSlots.length === 0) {
         temp.push(car);
       } else {
-        let available = true;
-        for (let booking of car.bookedTimeSlots) {
+        let isAvailable = true;
+        for (const booking of car.bookedTimeSlots) {
+          const bookedFrom = moment(booking.from);
+          const bookedTo = moment(booking.to);
           if (
-            selectedFrom.isBetween(booking.from, booking.to) ||
-            selectedTo.isBetween(booking.from, booking.to) ||
-            moment(booking.from).isBetween(selectedFrom, selectedTo) ||
-            moment(booking.to).isBetween(selectedFrom, selectedTo)
+            selectedFrom.isBetween(bookedFrom, bookedTo) ||
+            selectedTo.isBetween(bookedFrom, bookedTo) ||
+            bookedFrom.isBetween(selectedFrom, selectedTo) ||
+            bookedTo.isBetween(selectedFrom, selectedTo) ||
+            selectedFrom.isSame(bookedFrom) || selectedFrom.isSame(bookedTo) ||
+            selectedTo.isSame(bookedFrom) || selectedTo.isSame(bookedTo)
           ) {
-            available = false;
+            isAvailable = false;
             break;
           }
         }
-        if (available) temp.push(car);
+        if (isAvailable) temp.push(car);
       }
     }
     setTotalcars(temp);
@@ -176,70 +62,160 @@ function Home() {
 
   return (
     <DefaultLayout>
-      {loading && <Spinner />}
-
-      {/* Availability Filter */}
-      <div className="max-w-5xl mx-auto px-4 mt-6 mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          🔎 Check Availability
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          <input
-            type="datetime-local"
-            className="border border-yellow-500 rounded px-3 py-2 focus:ring focus:ring-yellow-400 w-full sm:w-1/2"
-            onChange={(e) => setFrom(e.target.value)}
+      {/* Immersive Hero Section */}
+      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
+        {/* Cinematic Background */}
+        <div className="absolute inset-0 z-0 select-none">
+          <img
+            src="https://images.unsplash.com/photo-1622185135505-2d795003994a?q=80&w=2670&auto=format&fit=crop"
+            alt="Cinematic Motorcycle"
+            className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
           />
-          <input
-            type="datetime-local"
-            className="border border-yellow-500 rounded px-3 py-2 focus:ring focus:ring-yellow-400 w-full sm:w-1/2"
-            onChange={(e) => setTo(e.target.value)}
-          />
-          <button
-            onClick={setFilter}
-            className="bg-yellow-500 text-white px-5 py-2 rounded shadow hover:bg-yellow-600 transition"
-          >
-            Apply
-          </button>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-zinc-950"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
         </div>
-      </div>
 
-      {/* Cars List */}
-      <div className="max-w-6xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {totalCars.map((car, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col"
-            data-aos="flip-left"
-            data-aos-duration="1200"
-          >
-            <img
-              src={car.image}
-              alt={car.name}
-              className="w-full h-48 object-cover rounded-t-xl"
-            />
+        {/* Hero Content */}
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-contrast mb-8 border border-white/10 animate-fade-up">
+            <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-300">Premium Fleet Available</span>
+          </div>
 
-            <div className="p-4 flex flex-col flex-grow justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">{car.name}</h3>
-                <p className="text-gray-600">₹{car.rentPerHour} / hour</p>
-              </div>
+          <h1 className="text-6xl md:text-8xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl animate-fade-up style={{animationDelay: '0.1s'}}">
+            Beyond <span className="text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-600">Speed</span>
+          </h1>
 
-              <div className="flex items-center justify-between mt-3">
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  {car.bookedTimeSlots.length === 0
-                    ? "Available"
-                    : "Partially Booked"}
-                </span>
-                <Link to={`/booking/${car._id}`}>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm">
-                    Book Now
-                  </button>
-                </Link>
-              </div>
+          <p className="text-lg md:text-2xl text-zinc-300 mb-12 font-light max-w-2xl mx-auto animate-fade-up style={{animationDelay: '0.2s'}}">
+            Experience the thrill of the open road with our curated collection of elite superbikes and cruisers.
+          </p>
+
+          {/* Floating Search Hub */}
+          <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 max-w-2xl mx-auto animate-fade-up style={{animationDelay: '0.3s'}}">
+            <div className="flex-grow">
+              <RangePicker
+                showTime={{ format: "HH:mm" }}
+                format="MMM DD yyyy HH:mm"
+                onChange={setFilter}
+                className="w-full h-14 rounded-xl border-none bg-white/10 hover:bg-white/20 text-white placeholder-white/50"
+                placeholder={['Pick-up Date', 'Drop-off Date']}
+                popupStyle={{ zIndex: 9999 }}
+                allowClear={false}
+              />
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <section className="relative z-10 bg-zinc-950 pb-20 -mt-20">
+        <div className="max-w-[1400px] mx-auto px-6">
+
+          {loading && <div className="flex justify-center py-20"><Spinner /></div>}
+
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 pb-6 border-b border-zinc-900">
+            <div>
+              <h2 className="text-4xl font-black text-white mb-2">The Collection</h2>
+              <p className="text-zinc-500">Select your machine based on performance and style</p>
+            </div>
+            <div className="mt-4 md:mt-0 text-right">
+              <span className="text-4xl font-bold text-yellow-500">{totalCars.length}</span>
+              <span className="text-zinc-600 ml-2 font-medium">Bikes Available</span>
+            </div>
+          </div>
+
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[400px]">
+            {totalCars.map((car, index) => {
+              // Make every 7th item large for "Featured" look in Bento Grid
+              const isLarge = index % 7 === 0;
+              return (
+                <Link
+                  to={`/booking/${car._id}`}
+                  key={car._id}
+                  className={`group relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl transition-all duration-500 hover:border-yellow-500/50 hover:shadow-[0_0_30px_rgba(250,204,21,0.1)] ${isLarge ? 'md:col-span-2' : ''}`}
+                >
+                  {/* Image Layer */}
+                  <div className="absolute inset-0 z-0">
+                    <img
+                      src={car.image}
+                      alt={car.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent opacity-90"></div>
+                  </div>
+
+                  {/* Availability Badge */}
+                  <div className="absolute top-4 right-4 z-20">
+                    {car.bookedTimeSlots.length === 0 ? (
+                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span className="text-xs font-bold text-emerald-300 uppercase">Available</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 backdrop-blur-md">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                        <span className="text-xs font-bold text-red-300 uppercase">Booked</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content Layer */}
+                  <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 md:p-8">
+                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="flex items-center gap-2 text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2">
+                        <span>{car.fuelType}</span>
+                        <span>•</span>
+                        <span>{car.capacity} Seats</span>
+                      </div>
+
+                      <h3 className={`font-black text-white leading-tight mb-2 ${isLarge ? 'text-4xl' : 'text-2xl'}`}>
+                        {car.name}
+                      </h3>
+
+                      <div className="flex items-end justify-between mt-4 pb-2 border-b border-white/10">
+                        <div className="flex flex-col">
+                          <span className="text-zinc-400 text-xs uppercase font-bold">Rate</span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-white">₹{car.rentPerHour}</span>
+                            <span className="text-zinc-500 text-sm">/hr</span>
+                          </div>
+                        </div>
+
+                        <div className="w-10 h-10 rounded-full bg-yellow-500 text-black flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                          <ArrowRight size={20} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-32 grid md:grid-cols-3 gap-8 border-t border-zinc-900 pt-16">
+            <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
+              <Zap size={32} className="text-yellow-500 mb-6" />
+              <h3 className="text-xl font-bold text-white mb-2">Instant Power</h3>
+              <p className="text-zinc-500 leading-relaxed">Book your dream ride in seconds with our streamlined digital garage.</p>
+            </div>
+            <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
+              <Shield size={32} className="text-emerald-500 mb-6" />
+              <h3 className="text-xl font-bold text-white mb-2">Verified Integrity</h3>
+              <p className="text-zinc-500 leading-relaxed">Every vehicle undergoes a rigourous 50-point safety inspection before every ride.</p>
+            </div>
+            <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
+              <Clock size={32} className="text-blue-500 mb-6" />
+              <h3 className="text-xl font-bold text-white mb-2">24/7 Support</h3>
+              <p className="text-zinc-500 leading-relaxed">Roadside assistance and support team available round the clock for your journey.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
       <Chatbot />
     </DefaultLayout>
   );

@@ -438,6 +438,7 @@ function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800 px-4">
+
       {/* Background Blobs */}
       <div className="absolute -top-24 -left-24 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
       <div className="absolute top-36 -right-16 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
@@ -448,7 +449,7 @@ function Register() {
       {/* Form */}
       <form
         onSubmit={onFinish}
-        className="relative z-10 w-full max-w-md sm:max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-2xl bg-white/10 border border-white/20 hover:scale-[1.02] transition-transform"
+        className="relative z-10 w-full max-w-md sm:max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-2xl bg-white/10 border border-white/20 hover:scale-[1.01] transition-transform"
       >
         <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-white mb-2">
           User Registration
