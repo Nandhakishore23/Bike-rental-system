@@ -7,7 +7,7 @@ import { BookCar } from "../redux/actions/bookingActions";
 import Spinner from "../components/Spinner";
 import moment from "moment";
 import StripeCheckout from "react-stripe-checkout";
-import { Calendar, Clock, Shield, Fuel, Users, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, Shield, Fuel, Users, ArrowLeft, Star, MessageCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function BookingBike() {
@@ -115,6 +115,10 @@ function BookingBike() {
             <div className="relative z-10 p-8">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 text-xs font-bold uppercase tracking-wider mb-4">
                 Premium Selection
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 text-white border border-white/10 text-xs font-bold uppercase tracking-wider mb-4 ml-4">
+                <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                {car.reviews?.length > 0 ? (car.reviews.reduce((acc, item) => acc + item.rating, 0) / car.reviews.length).toFixed(1) : "New"}
               </div>
               <h1 className="text-4xl md:text-5xl font-black text-white mb-2 leading-tight">{car.name}</h1>
               <div className="flex flex-wrap gap-4 text-zinc-300 text-sm font-medium">

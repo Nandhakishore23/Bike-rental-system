@@ -15,29 +15,29 @@ function Home() {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
   const [totalCars, setTotalcars] = useState([]);
+  const [searchKey, setSearchKey] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("default");
+  const [dateRange, setDateRange] = useState([]); // Store plain date objects/moment objects
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllCars());
   }, [dispatch]);
 
+  // Unified Filter Effect: Runs whenever ANY filter criteria changes
   useEffect(() => {
-    setTotalcars(cars);
-  }, [cars]);
+    let tempCars = [...cars];
 
-  function setFilter(values) {
-    if (!values || values.length < 2) {
-      setTotalcars(cars);
-      return;
-    }
-    const selectedFrom = moment(values[0].format("MMM DD yyyy HH:mm"));
-    const selectedTo = moment(values[1].format("MMM DD yyyy HH:mm"));
+    // 1. Date Range Filter
+    if (dateRange && dateRange.length === 2) {
+      const selectedFrom = dateRange[0];
+      const selectedTo = dateRange[1];
 
-    const temp = [];
-    for (const car of cars) {
-      if (car.bookedTimeSlots.length === 0) {
-        temp.push(car);
-      } else {
+      tempCars = tempCars.filter(car => {
+        if (!car.bookedTimeSlots || car.bookedTimeSlots.length === 0) return true;
+
+        // Return false if ANY booking overlaps
         let isAvailable = true;
         for (const booking of car.bookedTimeSlots) {
           const bookedFrom = moment(booking.from);
@@ -54,10 +54,47 @@ function Home() {
             break;
           }
         }
-        if (isAvailable) temp.push(car);
-      }
+        return isAvailable;
+      });
     }
-    setTotalcars(temp);
+
+    // 2. Text Search (Case-Insensitive)
+    if (searchKey) {
+      tempCars = tempCars.filter(car =>
+        car.name.toLowerCase().includes(searchKey.toLowerCase())
+      );
+    }
+
+    // 3. Fuel Type Filter
+    if (typeFilter !== "all") {
+      tempCars = tempCars.filter(car =>
+        car.fuelType && car.fuelType.toLowerCase() === typeFilter.toLowerCase()
+      );
+    }
+
+    // 4. Sort Order
+    if (sortOrder === "low-high") {
+      tempCars.sort((a, b) => a.rentPerHour - b.rentPerHour);
+    } else if (sortOrder === "high-low") {
+      tempCars.sort((a, b) => b.rentPerHour - a.rentPerHour);
+    }
+
+    setTotalcars(tempCars);
+  }, [cars, searchKey, typeFilter, sortOrder, dateRange]);
+
+
+  // Handler just for DatePicker to update state
+  function setFilter(values) {
+    if (values) {
+      // AntD RangePicker values need to be converted to consistent moment objects for comparison
+      // The picker returns moment objects, but let's be safe
+      setDateRange([
+        moment(values[0].format("MMM DD yyyy HH:mm")),
+        moment(values[1].format("MMM DD yyyy HH:mm"))
+      ]);
+    } else {
+      setDateRange([]);
+    }
   }
 
   return (
@@ -76,33 +113,83 @@ function Home() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-10">
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto mt-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-contrast mb-8 border border-white/10 animate-fade-up">
             <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
             <span className="text-xs font-semibold uppercase tracking-widest text-zinc-300">Premium Fleet Available</span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl animate-fade-up style={{animationDelay: '0.1s'}}">
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl animate-fade-up style={{animationDelay: '0.1s'}}">
             Beyond <span className="text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-600">Speed</span>
           </h1>
 
-          <p className="text-lg md:text-2xl text-zinc-300 mb-12 font-light max-w-2xl mx-auto animate-fade-up style={{animationDelay: '0.2s'}}">
-            Experience the thrill of the open road with our curated collection of elite superbikes and cruisers.
+          <p className="text-lg md:text-xl text-zinc-300 mb-10 font-light max-w-2xl mx-auto animate-fade-up style={{animationDelay: '0.2s'}}">
+            Find your perfect ride. Filter by date, bike model, or fuel preference.
           </p>
 
-          {/* Floating Search Hub */}
-          <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 max-w-2xl mx-auto animate-fade-up style={{animationDelay: '0.3s'}}">
-            <div className="flex-grow">
+          {/* Advanced Command Search Hub */}
+          <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/10 p-3 rounded-3xl shadow-2xl flex flex-col md:flex-row gap-3 max-w-5xl mx-auto animate-fade-up style={{animationDelay: '0.3s'}}">
+
+            {/* 1. Date Range Picker (The most important filter) */}
+            <div className="flex-grow md:w-1/3">
               <RangePicker
                 showTime={{ format: "HH:mm" }}
                 format="MMM DD yyyy HH:mm"
                 onChange={setFilter}
-                className="w-full h-14 rounded-xl border-none bg-white/10 hover:bg-white/20 text-white placeholder-white/50"
+                className="w-full h-14 rounded-2xl border-none bg-black/40 hover:bg-black/60 text-white placeholder-zinc-500 font-['Outfit']"
                 placeholder={['Pick-up Date', 'Drop-off Date']}
                 popupStyle={{ zIndex: 9999 }}
-                allowClear={false}
+                allowClear={true}
               />
             </div>
+
+            {/* 2. Text Search */}
+            <div className="relative flex-grow md:w-1/4">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+              <input
+                type="text"
+                className="w-full h-14 pl-12 pr-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-yellow-500/50 transition-all font-['Outfit']"
+                placeholder="Search bike name..."
+                value={searchKey}
+                onChange={(e) => setSearchKey(e.target.value)}
+              />
+            </div>
+
+            {/* 3. Fuel/Type Filter */}
+            <div className="relative md:w-1/6">
+              <select
+                className="w-full h-14 px-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white appearance-none cursor-pointer focus:ring-2 focus:ring-yellow-500/50 font-['Outfit']"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+              >
+                <option value="all">All Available</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+
+            {/* 4. Sort Filter */}
+            <div className="relative md:w-1/6">
+              <select
+                className="w-full h-14 px-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white appearance-none cursor-pointer focus:ring-2 focus:ring-yellow-500/50 font-['Outfit']"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="default">Sort By</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -130,9 +217,10 @@ function Home() {
             {totalCars.map((car, index) => {
               // Make every 7th item large for "Featured" look in Bento Grid
               const isLarge = index % 7 === 0;
+              const admin = JSON.parse(localStorage.getItem("admin"));
               return (
                 <Link
-                  to={`/booking/${car._id}`}
+                  to={admin ? `/editbike/${car._id}` : `/booking/${car._id}`}
                   key={car._id}
                   className={`group relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl transition-all duration-500 hover:border-yellow-500/50 hover:shadow-[0_0_30px_rgba(250,204,21,0.1)] ${isLarge ? 'md:col-span-2' : ''}`}
                 >
