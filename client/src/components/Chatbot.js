@@ -1,4 +1,6 @@
 import api from "../api/axios";
+import React, { useState, useRef, useEffect } from "react";
+import { MessageSquare, X, Send, Sparkles, Bot } from "lucide-react";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
