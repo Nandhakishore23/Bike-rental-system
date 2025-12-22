@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import axios from "axios";
 import { message } from "antd";
+import api from "../api/axios";
 import {
   Plus,
   Edit2,
