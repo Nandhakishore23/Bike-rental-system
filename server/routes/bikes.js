@@ -48,4 +48,28 @@ router.post("/deletebike", async (req, res) => {
   }
 });
 
+router.post("/rate", async (req, res) => {
+  try {
+    const { bikeId, userId, username, rating, comment } = req.body;
+
+    const bike = await Bike.findOne({ _id: bikeId });
+    if (!bike) return res.status(404).json({ error: "Bike not found" });
+
+    const review = {
+      user: userId,
+      username,
+      rating: Number(rating),
+      comment
+    };
+
+    bike.reviews.push(review);
+    await bike.save();
+
+    res.send("Review added successfully");
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json(error);
+  }
+});
+
 module.exports = router;
