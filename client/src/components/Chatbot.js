@@ -1,3 +1,4 @@
+import api from "../api/axios";
 import React, { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Send, Sparkles, Bot } from "lucide-react";
 
@@ -41,21 +42,17 @@ export default function Chatbot() {
 
     try {
       // Call backend API
-      const res = await fetch("http://localhost:5000/api/chatbot/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: input,
-          userContext: {
-            name: user.username || "Guest",
-            age,
-            isVerified,
-            licenseExpiry: user.licenseExpiry || "N/A"
-          }
-        }),
+      const res = await api.post("/chatbot/ask", {
+        message: input,
+        userContext: {
+          name: user.username || "Guest",
+          age,
+          isVerified,
+          licenseExpiry: user.licenseExpiry || "N/A"
+        }
       });
 
-      const data = await res.json();
+      const data = res.data;
       setMessages([...newMessages, { sender: "bot", text: data.reply }]);
     } catch (err) {
       console.error(err);
@@ -67,6 +64,7 @@ export default function Chatbot() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] font-sans">

@@ -41,19 +41,15 @@
 // };
 
 
-import axios from "axios";
 import { message } from "antd";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000", // pointed to local server for development
-});
+import api from "../../api/axios";
 
 // LOGIN
 export const userLogin = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.post("/api/users/login", reqObj);
+    const response = await api.post("/users/login", reqObj);
 
     localStorage.setItem("user", JSON.stringify(response.data));
     message.success("Login Success");
@@ -78,7 +74,7 @@ export const userRegister = (reqObj) => async (dispatch) => {
     const { username, email, password } = reqObj;
 
 
-    const response = await API.post("/api/users/register", {
+    const response = await api.post("/users/register", {
       username,
       email,
       password,
@@ -104,7 +100,7 @@ export const userUpdate = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.post("/api/users/update", reqObj);
+    const response = await api.post("/users/update", reqObj);
 
     // Update local storage with new user data
     localStorage.setItem("user", JSON.stringify(response.data));
