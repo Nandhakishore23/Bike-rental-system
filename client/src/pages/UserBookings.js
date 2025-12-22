@@ -7,7 +7,8 @@ import moment from "moment";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Calendar, Clock, MapPin, Receipt, X, Star } from "lucide-react";
-import axios from "axios";
+import { Calendar, Clock, MapPin, Receipt, X, Star } from "lucide-react";
+import api from "../api/axios";
 import { message } from "antd";
 
 AOS.init();
@@ -25,7 +26,7 @@ function UserBookings() {
 
   const submitReview = async () => {
     try {
-      await axios.post("http://localhost:5000/api/bikes/rate", {
+      await api.post("/bikes/rate", {
         bikeId: ratingModal.carId,
         userId: user._id,
         username: user.username,

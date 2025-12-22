@@ -41,7 +41,7 @@ function AdminHome() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users/getallusers");
+      const response = await api.get("/users/getallusers");
       setUsers(response.data);
     } catch (error) {
       console.error(error);
@@ -51,7 +51,7 @@ function AdminHome() {
   const verifyUser = async (userId) => {
     try {
       setVerifying(true);
-      await axios.post("http://localhost:5000/api/users/update", {
+      await api.post("/users/update", {
         _id: userId,
         isVerified: true
       });

@@ -1,14 +1,11 @@
-import axios from "axios";
 import { message } from "antd";
-const API = axios.create({
-  baseURL: process.env.Frontend_URL,
-});
+import api from "../../api/axios";
 
 export const getAllCars = () => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    const response = await API.get("https://bike-rental-system-api.vercel.app/api/bikes/getallbikes");
+    const response = await api.get("/bikes/getallbikes");
 
     dispatch({ type: "GET_ALL_CARS", payload: response.data });
     dispatch({ type: "LOADING", payload: false });
@@ -22,7 +19,7 @@ export const addBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/addbike", reqObj);
+    await api.post("/bikes/addbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
     message.success("New Bike added successfully");
@@ -39,7 +36,7 @@ export const editBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/editbike", reqObj);
+    await api.post("/bikes/editbike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
     message.success("Bike details updated successfully");
@@ -56,9 +53,10 @@ export const deleteBike = (reqObj) => async (dispatch) => {
   dispatch({ type: "LOADING", payload: true });
 
   try {
-    await API.post("https://bike-rental-system-api.vercel.app/api/bikes/deletebike", reqObj);
+    await api.post("/bikes/deletebike", reqObj);
 
     dispatch({ type: "LOADING", payload: false });
+
     message.success("Bike deleted successfully");
     setTimeout(() => {
       window.location.reload();
