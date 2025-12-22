@@ -38,6 +38,7 @@ function DefaultLayout({ children }) {
             {[
               { name: "Home", path: "/" },
               user && { name: "Bookings", path: "/userbookings" },
+              user && { name: "Profile", path: "/profile" },
               admin && { name: "Admin", path: "/admin" },
             ]
               .filter(Boolean)
@@ -98,6 +99,7 @@ function DefaultLayout({ children }) {
             <div className="flex flex-col gap-4">
               <Link to="/" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">Home</Link>
               {user && <Link to="/userbookings" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">My Bookings</Link>}
+              {user && <Link to="/profile" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">My Profile</Link>}
               {admin && <Link to="/admin" onClick={() => setMenuOpen(false)} className="text-lg font-bold text-zinc-100">Admin Panel</Link>}
               <div className="h-px bg-zinc-800 my-2"></div>
               {(user || admin) ? (

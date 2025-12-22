@@ -6,7 +6,9 @@ import Spinner from "../components/Spinner";
 import moment from "moment";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Calendar, Clock, MapPin, Receipt, X } from "lucide-react";
+import { Calendar, Clock, MapPin, Receipt, X, Star } from "lucide-react";
+import axios from "axios";
+import { message } from "antd";
 
 AOS.init();
 
@@ -17,6 +19,28 @@ function UserBookings() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [ratingModal, setRatingModal] = useState({ show: false, bookingId: null, carId: null, carName: "" });
+  const [ratingValue, setRatingValue] = useState(5);
+  const [comment, setComment] = useState("");
+
+  const submitReview = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/bikes/rate", {
+        bikeId: ratingModal.carId,
+        userId: user._id,
+        username: user.username,
+        rating: ratingValue,
+        comment
+      });
+      message.success("Review submitted successfully");
+      setRatingModal({ ...ratingModal, show: false });
+      setComment("");
+      setRatingValue(5);
+    } catch (error) {
+      console.error(error);
+      message.error("Something went wrong");
+    }
+  };
 
   useEffect(() => {
     dispatch(getAllBookings());
@@ -93,12 +117,20 @@ function UserBookings() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setSelectedBooking(booking)}
-                      className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm border border-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2 group-hover:bg-yellow-500 group-hover:text-black group-hover:border-yellow-500"
-                    >
-                      <Receipt size={16} /> View Details
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedBooking(booking)}
+                        className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm border border-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2 group-hover:bg-yellow-500 group-hover:text-black group-hover:border-yellow-500"
+                      >
+                        <Receipt size={16} /> Receipt
+                      </button>
+                      <button
+                        onClick={() => setRatingModal({ show: true, bookingId: booking._id, carId: booking.car._id, carName: booking.car.name })}
+                        className="flex-1 py-3 rounded-xl bg-zinc-800 hover:bg-yellow-500 hover:text-black text-zinc-300 font-bold text-sm border border-zinc-700 hover:border-yellow-500 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Star size={16} /> Rate
+                      </button>
+                    </div>
 
                     <div className="absolute bottom-0 left-0 h-1 bg-yellow-500 w-0 group-hover:w-full transition-all duration-500"></div>
                   </div>
@@ -107,6 +139,50 @@ function UserBookings() {
           </div>
         </div>
       </div>
+
+      {/* Rating Modal */}
+      {ratingModal.show && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setRatingModal({ ...ratingModal, show: false })}>
+          <div className="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+            <h2 className="text-2xl font-bold text-white mb-4">Rate Your Ride</h2>
+            <p className="text-zinc-400 mb-6">How was your experience with the <span className="text-yellow-500 font-bold">{ratingModal.carName}</span>?</p>
+
+            <div className="flex justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRatingValue(star)}
+                  className={`p-2 transition-transform hover:scale-110 ${ratingValue >= star ? "text-yellow-500" : "text-zinc-700"}`}
+                >
+                  <Star size={32} fill={ratingValue >= star ? "currentColor" : "none"} />
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              className="w-full bg-black/50 border border-zinc-700 rounded-xl p-4 text-white placeholder-zinc-500 mb-6 focus:border-yellow-500 outline-none resize-none h-32"
+              placeholder="Share your experience (optional)..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setRatingModal({ ...ratingModal, show: false })}
+                className="flex-1 py-3 rounded-xl bg-zinc-800 text-white font-bold hover:bg-zinc-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitReview}
+                className="flex-1 py-3 rounded-xl bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition shadow-[0_0_20px_rgba(250,204,21,0.2)]"
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Blueprint Style Modal */}
       {selectedBooking && (

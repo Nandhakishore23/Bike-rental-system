@@ -4,7 +4,7 @@ import { MessageSquare, X, Send, Sparkles, Bot } from "lucide-react";
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Welcome to RideX Premium! 🏍️ Need help finding your dream ride?" },
+    { sender: "bot", text: "Welcome to RideX! 🏍️ Need help finding your dream ride?" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,12 +24,35 @@ export default function Chatbot() {
     setInput("");
     setLoading(true);
 
+    // Get User Context
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    let age = "Unknown";
+    let isVerified = false;
+
+    if (user.dob) {
+      const birthDate = new Date(user.dob);
+      const today = new Date();
+      age = today.getFullYear() - birthDate.getFullYear(); // Approx age
+    }
+
+    if (user.licenseNumber && user.aadhaar) {
+      isVerified = true;
+    }
+
     try {
       // Call backend API
-      const res = await fetch("https://bike-rental-system-api.vercel.app/api/chatbot/ask", {
+      const res = await fetch("http://localhost:5000/api/chatbot/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          message: input,
+          userContext: {
+            name: user.username || "Guest",
+            age,
+            isVerified,
+            licenseExpiry: user.licenseExpiry || "N/A"
+          }
+        }),
       });
 
       const data = await res.json();
@@ -68,19 +91,19 @@ export default function Chatbot() {
       {/* Glassmorphic Chat Window */}
       <div
         className={`fixed bottom-6 right-6 w-[350px] md:w-[400px] h-[600px] max-h-[80vh] flex flex-col rounded-3xl overflow-hidden transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) shadow-2xl border border-white/10 backdrop-blur-2xl ${isOpen
-            ? "opacity-100 translate-y-0 pointer-events-auto bg-black/80 supports-[backdrop-filter]:bg-zinc-900/60"
-            : "opacity-0 translate-y-20 pointer-events-none scale-95"
+          ? "opacity-100 translate-y-0 pointer-events-auto bg-black/80 supports-[backdrop-filter]:bg-zinc-900/60"
+          : "opacity-0 translate-y-20 pointer-events-none scale-95"
           }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/5 bg-white/5 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-              <Bot size={20} className="text-black" />
+        <div className="flex items-center justify-between p-3 border-b border-white/5 bg-white/5 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <Bot size={16} className="text-black" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg font-['Outfit'] tracking-tight">RideX AI</h3>
-              <p className="text-xs text-brand-green-400 flex items-center gap-1 text-emerald-400">
+              <h3 className="font-bold text-white text-md font-['Outfit'] tracking-tight">BikeBuddy</h3>
+              <p className="text-[10px] text-brand-green-400 flex items-center gap-1 text-emerald-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
               </p>
             </div>
@@ -89,27 +112,27 @@ export default function Chatbot() {
             onClick={toggleChat}
             className="p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
           {messages.map((msg, i) => (
             <div
               key={i}
               className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.sender === "bot" && (
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center mr-2 border border-white/5 flex-shrink-0">
-                  <Sparkles size={14} className="text-yellow-500" />
+                <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center mr-2 border border-white/5 flex-shrink-0">
+                  <Sparkles size={12} className="text-yellow-500" />
                 </div>
               )}
 
               <div
-                className={`p-4 max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.sender === "user"
-                    ? "bg-yellow-500 text-black rounded-2xl rounded-tr-sm font-medium"
-                    : "bg-zinc-800/80 text-zinc-200 border border-white/5 rounded-2xl rounded-tl-sm backdrop-blur-sm"
+                className={`p-3 max-w-[85%] text-xs md:text-sm leading-relaxed shadow-sm ${msg.sender === "user"
+                  ? "bg-yellow-500 text-black rounded-2xl rounded-tr-sm font-medium"
+                  : "bg-zinc-800/80 text-zinc-200 border border-white/5 rounded-2xl rounded-tl-sm backdrop-blur-sm"
                   }`}
               >
                 {msg.text}

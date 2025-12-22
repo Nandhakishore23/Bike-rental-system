@@ -45,7 +45,7 @@ import axios from "axios";
 import { message } from "antd";
 
 const API = axios.create({
-  baseURL: "https://bike-rental-system-api.vercel.app", // ✅ backend base URL
+  baseURL: "http://localhost:5000", // pointed to local server for development
 });
 
 // LOGIN
@@ -77,7 +77,7 @@ export const userRegister = (reqObj) => async (dispatch) => {
     // ✅ Make sure username, email, password are sent
     const { username, email, password } = reqObj;
 
-    
+
     const response = await API.post("/api/users/register", {
       username,
       email,
@@ -96,6 +96,30 @@ export const userRegister = (reqObj) => async (dispatch) => {
   } catch (err) {
     console.error("❌ Register error:", err.message);
     message.error("Registration failed");
+    dispatch({ type: "LOADING", payload: false });
+  }
+};
+// UPDATE USER
+export const userUpdate = (reqObj) => async (dispatch) => {
+  dispatch({ type: "LOADING", payload: true });
+
+  try {
+    const response = await API.post("/api/users/update", reqObj);
+
+    // Update local storage with new user data
+    localStorage.setItem("user", JSON.stringify(response.data));
+
+    message.success("Profile updated successfully");
+    dispatch({ type: "LOADING", payload: false });
+
+    // Optional: reload to refresh UI if needed, or rely on React state
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+
+  } catch (err) {
+    console.error("❌ Update error:", err.message);
+    message.error("Update failed");
     dispatch({ type: "LOADING", payload: false });
   }
 };

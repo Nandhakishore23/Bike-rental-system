@@ -169,4 +169,38 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// UPDATE USER PROFILE
+router.post("/update", async (req, res) => {
+  try {
+    const { _id, phone, address, licenseUrl, licenseNumber, licenseExpiry, dob, aadhaar, emergencyContact } = req.body;
+
+    // Find user and update
+    // We do NOT allow updating username/email/password here for simplicity/security in this step
+    // 'new: true' returns the updated document
+    const user = await User.findOneAndUpdate(
+      { _id },
+      { phone, address, licenseUrl, licenseNumber, licenseExpiry, dob, aadhaar, emergencyContact },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.send(user);
+  } catch (error) {
+    console.error("❌ Update Error:", error);
+    res.status(400).json(error);
+  }
+});
+
+router.get("/getallusers", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.send(users);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+});
+
 module.exports = router;

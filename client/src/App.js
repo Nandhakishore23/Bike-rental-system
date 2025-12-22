@@ -10,6 +10,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminRegister from "./pages/AdminRegister";
 import AddBike from "./pages/AddBike";
 import EditBike from "./pages/EditBike";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   const user = localStorage.getItem("user");
@@ -34,6 +35,7 @@ function App() {
           exact
           component={UserBookings}
         />
+        <ProtectedRouteUser path="/profile" exact component={UserProfile} />
         <ProtectedRouteAdmin path="/addbike" exact component={AddBike} />
         <ProtectedRouteAdmin
           path="/editbike/:carid"

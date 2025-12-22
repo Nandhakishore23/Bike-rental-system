@@ -33,11 +33,17 @@ const carSchema = new mongoose.Schema(
       },
     ],
     rentPerHour: { type: Number, required: true },
-    // admin: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "admin",
-    // }
+    reviews: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+        username: { type: String, required: true },
+        rating: { type: Number, required: true },
+        comment: { type: String },
+        createdAt: { type: Date, default: Date.now }
+      }
+    ],
   },
+
   { timestamps: true }
 );
 
