@@ -4,7 +4,7 @@ import DefaultLayout from "../components/DefaultLayout";
 import { deleteBike, getAllCars } from "../redux/actions/carsActions";
 import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
-import axios from "axios";
+// import axios from "axios";
 import { message } from "antd";
 import api from "../api/axios";
 import {
@@ -12,13 +12,22 @@ import {
   Edit2,
   Trash2,
   Search,
-  Bike,
-  Users,
   CheckCircle,
-  XCircle,
   ExternalLink,
   ShieldAlert
 } from "lucide-react";
+// import {
+//   Plus,
+//   Edit2,
+//   Trash2,
+//   Search,
+//   Bike,
+//   Users,
+//   CheckCircle,
+//   XCircle,
+//   ExternalLink,
+//   ShieldAlert
+// } from "lucide-react";
 
 function AdminHome() {
   const { cars } = useSelector((state) => state.carsReducer);

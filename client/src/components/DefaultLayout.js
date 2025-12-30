@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Footer from "./footer/Footer";
+// import Footer from "./footer/Footer";
 import { Menu as MenuIcon, X } from "lucide-react";
 
 function DefaultLayout({ children }) {

@@ -6,8 +6,8 @@ import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Chatbot from "../components/Chatbot";
-import { DatePicker } from "antd";
-import { Zap, Shield, Clock, ArrowRight } from "lucide-react";
+import { DatePicker, Pagination } from "antd";
+import { Zap, Shield, Clock, ArrowRight, MapPin, Search, ChevronDown } from "lucide-react";
 
 const { RangePicker } = DatePicker;
 
@@ -18,17 +18,25 @@ function Home() {
   const [searchKey, setSearchKey] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("default");
-  const [dateRange, setDateRange] = useState([]); // Store plain date objects/moment objects
+  const [locationFilter, setLocationFilter] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [dateRange, setDateRange] = useState([]);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllCars());
   }, [dispatch]);
 
-  // Unified Filter Effect: Runs whenever ANY filter criteria changes
+  // Unified Filter Effect
   useEffect(() => {
     let tempCars = [...cars];
 
+    // ... (Filter Logic remains same) ...
     // 1. Date Range Filter
     if (dateRange && dateRange.length === 2) {
       const selectedFrom = dateRange[0];
@@ -36,8 +44,6 @@ function Home() {
 
       tempCars = tempCars.filter(car => {
         if (!car.bookedTimeSlots || car.bookedTimeSlots.length === 0) return true;
-
-        // Return false if ANY booking overlaps
         let isAvailable = true;
         for (const booking of car.bookedTimeSlots) {
           const bookedFrom = moment(booking.from);
@@ -58,21 +64,34 @@ function Home() {
       });
     }
 
-    // 2. Text Search (Case-Insensitive)
+    // 2. Text Search (Name)
     if (searchKey) {
       tempCars = tempCars.filter(car =>
         car.name.toLowerCase().includes(searchKey.toLowerCase())
       );
     }
 
-    // 3. Fuel Type Filter
+    // 3. Location Search
+    if (locationFilter) {
+      tempCars = tempCars.filter(car =>
+        car.location && car.location.address &&
+        car.location.address.toLowerCase().includes(locationFilter.toLowerCase())
+      );
+    }
+
+    // 4. Fuel Type Filter
     if (typeFilter !== "all") {
       tempCars = tempCars.filter(car =>
         car.fuelType && car.fuelType.toLowerCase() === typeFilter.toLowerCase()
       );
     }
 
-    // 4. Sort Order
+    // 5. Price Range Filter
+    tempCars = tempCars.filter(car =>
+      car.rentPerHour >= priceRange[0] && car.rentPerHour <= priceRange[1]
+    );
+
+    // 6. Sort Order
     if (sortOrder === "low-high") {
       tempCars.sort((a, b) => a.rentPerHour - b.rentPerHour);
     } else if (sortOrder === "high-low") {
@@ -80,14 +99,12 @@ function Home() {
     }
 
     setTotalcars(tempCars);
-  }, [cars, searchKey, typeFilter, sortOrder, dateRange]);
+    setCurrentPage(1); // Reset to page 1 on filter change
+  }, [cars, searchKey, typeFilter, sortOrder, dateRange, locationFilter, priceRange]);
 
 
-  // Handler just for DatePicker to update state
   function setFilter(values) {
     if (values) {
-      // AntD RangePicker values need to be converted to consistent moment objects for comparison
-      // The picker returns moment objects, but let's be safe
       setDateRange([
         moment(values[0].format("MMM DD yyyy HH:mm")),
         moment(values[1].format("MMM DD yyyy HH:mm"))
@@ -97,9 +114,14 @@ function Home() {
     }
   }
 
+  // Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = totalCars.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
     <DefaultLayout>
-      {/* Immersive Hero Section */}
+      {/* ... Hero Section remains unchanged ... */}
       <section className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
         {/* Cinematic Background */}
         <div className="absolute inset-0 z-0 select-none">
@@ -128,69 +150,88 @@ function Home() {
           </p>
 
           {/* Advanced Command Search Hub */}
-          <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/10 p-3 rounded-3xl shadow-2xl flex flex-col md:flex-row gap-3 max-w-5xl mx-auto animate-fade-up style={{animationDelay: '0.3s'}}">
+          <div className="bg-zinc-900/80 backdrop-blur-xl border border-white/10 p-4 rounded-3xl shadow-2xl flex flex-col xl:flex-row gap-4 max-w-7xl mx-auto animate-fade-up style={{animationDelay: '0.3s'}}">
 
-            {/* 1. Date Range Picker (The most important filter) */}
-            <div className="flex-grow md:w-1/3">
+            {/* 1. Location Search */}
+            <div className="flex-1 relative group">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <MapPin className="w-5 h-5 text-yellow-500 group-focus-within:animate-bounce" />
+              </div>
+              <input
+                type="text"
+                className="w-full h-16 pl-12 pr-4 bg-black/40 hover:bg-black/60 border border-white/5 focus:border-yellow-500/50 rounded-2xl text-white placeholder-zinc-500 focus:ring-0 transition-all font-['Outfit']"
+                placeholder="Where are you riding?"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+              />
+              <label className="absolute -top-2.5 left-4 bg-zinc-900 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-focus-within:text-yellow-500 transition-colors">Location</label>
+            </div>
+
+            {/* 2. Date Range Picker */}
+            <div className="flex-[1.5] relative group">
               <RangePicker
                 showTime={{ format: "HH:mm" }}
                 format="MMM DD yyyy HH:mm"
                 onChange={setFilter}
-                className="w-full h-14 rounded-2xl border-none bg-black/40 hover:bg-black/60 text-white placeholder-zinc-500 font-['Outfit']"
+                className="w-full h-16 rounded-2xl border border-white/5 bg-black/40 hover:bg-black/60 text-white placeholder-zinc-500 font-['Outfit'] custom-range-picker"
                 placeholder={['Pick-up Date', 'Drop-off Date']}
                 popupStyle={{ zIndex: 9999 }}
                 allowClear={true}
               />
+              <label className="absolute -top-2.5 left-4 bg-zinc-900 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-yellow-500 transition-colors pointer-events-none z-10">Trip Dates</label>
             </div>
 
-            {/* 2. Text Search */}
-            <div className="relative flex-grow md:w-1/4">
+            {/* 3. Bike Search */}
+            <div className="flex-1 relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <Search className="w-5 h-5 text-zinc-500 group-focus-within:text-white transition-colors" />
               </div>
               <input
                 type="text"
-                className="w-full h-14 pl-12 pr-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-yellow-500/50 transition-all font-['Outfit']"
-                placeholder="Search bike name..."
+                className="w-full h-16 pl-12 pr-4 bg-black/40 hover:bg-black/60 border border-white/5 focus:border-yellow-500/50 rounded-2xl text-white placeholder-zinc-500 focus:ring-0 transition-all font-['Outfit']"
+                placeholder="Search bike model..."
                 value={searchKey}
                 onChange={(e) => setSearchKey(e.target.value)}
               />
+              <label className="absolute -top-2.5 left-4 bg-zinc-900 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-focus-within:text-yellow-500 transition-colors">Model</label>
             </div>
 
-            {/* 3. Fuel/Type Filter */}
-            <div className="relative md:w-1/6">
-              <select
-                className="w-full h-14 px-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white appearance-none cursor-pointer focus:ring-2 focus:ring-yellow-500/50 font-['Outfit']"
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-              >
-                <option value="all">All Available</option>
-                <option value="Petrol">Petrol</option>
-                <option value="Electric">Electric</option>
-                <option value="Hybrid">Hybrid</option>
-              </select>
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {/* 4. Filters Group */}
+            <div className="flex flex-1 gap-2">
+              <div className="flex-1 relative group">
+                <select
+                  className="w-full h-16 px-4 bg-black/40 hover:bg-black/60 border border-white/5 focus:border-yellow-500/50 rounded-2xl text-white appearance-none cursor-pointer font-['Outfit'] focus:ring-0"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                >
+                  <option value="all">Fuel: All</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                  <ChevronDown className="w-4 h-4 text-zinc-500" />
+                </div>
               </div>
-            </div>
 
-            {/* 4. Sort Filter */}
-            <div className="relative md:w-1/6">
-              <select
-                className="w-full h-14 px-4 bg-black/40 hover:bg-black/60 border-none rounded-2xl text-white appearance-none cursor-pointer focus:ring-2 focus:ring-yellow-500/50 font-['Outfit']"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-              >
-                <option value="default">Sort By</option>
-                <option value="low-high">Price: Low to High</option>
-                <option value="high-low">Price: High to Low</option>
-              </select>
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              <div className="flex-1 relative group">
+                <select
+                  className="w-full h-16 px-4 bg-black/40 hover:bg-black/60 border border-white/5 focus:border-yellow-500/50 rounded-2xl text-white appearance-none cursor-pointer font-['Outfit'] focus:ring-0"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                >
+                  <option value="default">Sort By</option>
+                  <option value="low-high">Price: Low</option>
+                  <option value="high-low">Price: High</option>
+                </select>
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                  <ChevronDown className="w-4 h-4 text-zinc-500" />
+                </div>
               </div>
             </div>
 
           </div>
+
         </div>
       </section>
 
@@ -204,17 +245,22 @@ function Home() {
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 pb-6 border-b border-zinc-900">
             <div>
               <h2 className="text-4xl font-black text-white mb-2">The Collection</h2>
-              <p className="text-zinc-500">Select your machine based on performance and style</p>
+              <span className="text-zinc-500">Select your machine based on performance and style</span>
             </div>
-            <div className="mt-4 md:mt-0 text-right">
-              <span className="text-4xl font-bold text-yellow-500">{totalCars.length}</span>
-              <span className="text-zinc-600 ml-2 font-medium">Bikes Available</span>
+            <div className="mt-4 md:mt-0 text-right flex items-center gap-6">
+              <Link to="/map" className="hidden md:flex items-center gap-2 text-yellow-500 font-bold hover:text-yellow-400 transition-colors">
+                <span className="uppercase text-xs tracking-widest">Live Map</span> <ArrowRight size={16} />
+              </Link>
+              <div>
+                <span className="text-4xl font-bold text-yellow-500">{totalCars.length}</span>
+                <span className="text-zinc-600 ml-2 font-medium">Bikes Available</span>
+              </div>
             </div>
           </div>
 
-          {/* Bento Grid Layout */}
+          {/* Bento Grid Layout - REPLACED totalCars.map with currentItems.map */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[400px]">
-            {totalCars.map((car, index) => {
+            {currentItems.map((car, index) => {
               // Make every 7th item large for "Featured" look in Bento Grid
               const isLarge = index % 7 === 0;
               const admin = JSON.parse(localStorage.getItem("admin"));
@@ -283,6 +329,20 @@ function Home() {
             })}
           </div>
 
+          {/* Pagination Component */}
+          <div className="mt-12 flex justify-center">
+            <Pagination
+              current={currentPage}
+              total={totalCars.length}
+              pageSize={itemsPerPage}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              className="custom-pagination"
+            />
+          </div>
+
+
+
           {/* Trust Indicators */}
           <div className="mt-32 grid md:grid-cols-3 gap-8 border-t border-zinc-900 pt-16">
             <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
@@ -303,9 +363,9 @@ function Home() {
           </div>
 
         </div>
-      </section>
+      </section >
       <Chatbot />
-    </DefaultLayout>
+    </DefaultLayout >
   );
 }
 

@@ -33,6 +33,11 @@ const carSchema = new mongoose.Schema(
       },
     ],
     rentPerHour: { type: Number, required: true },
+    location: {
+      lat: { type: Number, default: 0 },
+      lng: { type: Number, default: 0 },
+      address: { type: String, default: "Not Set" },
+    },
     reviews: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },

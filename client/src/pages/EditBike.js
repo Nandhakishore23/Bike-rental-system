@@ -4,6 +4,11 @@ import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
 import { editBike, getAllCars } from "../redux/actions/carsActions";
 import { Link } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+
 import {
   ArrowLeft,
   Save,
@@ -11,8 +16,18 @@ import {
   DollarSign,
   Users,
   Fuel,
-  Link as LinkIcon
+  Link as LinkIcon,
+  MapPin
 } from "lucide-react";
+
+// Fix for Leaflet default marker
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 function EditBike({ match }) {
   const { cars } = useSelector((state) => state.carsReducer);
@@ -25,10 +40,45 @@ function EditBike({ match }) {
     image: "",
     rentPerHour: "",
     capacity: "",
-    fuelType: ""
+    fuelType: "",
+    location: { lat: 51.505, lng: -0.09, address: "London" }
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Map Click Handler for Edit Page
+  function LocationMarker() {
+    const map = useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+
+        // 1. Update State
+        setFormData(prev => ({
+          ...prev,
+          location: { ...prev.location, lat, lng }
+        }));
+        map.flyTo(e.latlng, map.getZoom());
+
+        // 2. Reverse Geocode
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.display_name) {
+              const cleanAddress = data.display_name.split(',').slice(0, 3).join(',');
+              setFormData(prev => ({
+                ...prev,
+                location: { ...prev.location, lat, lng, address: cleanAddress }
+              }));
+            }
+          })
+          .catch(err => console.error("Geocoding failed", err));
+      },
+    });
+
+    return formData.location ? (
+      <Marker position={[formData.location.lat, formData.location.lng]} />
+    ) : null;
+  }
 
   useEffect(() => {
     if (cars.length === 0) {
@@ -42,7 +92,8 @@ function EditBike({ match }) {
           image: currentCar.image,
           rentPerHour: currentCar.rentPerHour,
           capacity: currentCar.capacity,
-          fuelType: currentCar.fuelType
+          fuelType: currentCar.fuelType,
+          location: currentCar.location || { lat: 51.505, lng: -0.09, address: "Not Set" }
         });
         setIsLoaded(true);
       }
@@ -166,6 +217,33 @@ function EditBike({ match }) {
                       placeholder="https://..."
                       required
                     />
+                  </div>
+                </div>
+
+                {/* Location Picker */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                    <MapPin size={14} /> Current Location
+                  </label>
+                  <p className="text-xs text-zinc-600 mb-2">Update the bike's parking spot.</p>
+
+                  <div className="h-64 rounded-xl overflow-hidden border border-zinc-800 relative z-0">
+                    <MapContainer
+                      center={[formData.location?.lat || 51.505, formData.location?.lng || -0.09]}
+                      zoom={13}
+                      scrollWheelZoom={false}
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <LocationMarker />
+                    </MapContainer>
+                  </div>
+                  <div className="text-xs text-zinc-500 font-mono mt-1 flex justify-between items-center">
+                    <span>Lat: {formData.location?.lat?.toFixed(4)}, Lng: {formData.location?.lng?.toFixed(4)}</span>
+                    <span className="text-yellow-500 font-bold">{formData.location?.address || "Click map to set address"}</span>
                   </div>
                 </div>
 

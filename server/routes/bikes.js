@@ -29,6 +29,7 @@ router.post("/editbike", async (req, res) => {
     bike.fuelType = req.body.fuelType;
     bike.rentPerHour = req.body.rentPerHour;
     bike.capacity = req.body.capacity;
+    bike.location = req.body.location;
 
     await bike.save();
 
