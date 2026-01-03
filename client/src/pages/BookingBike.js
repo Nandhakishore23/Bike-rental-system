@@ -7,7 +7,8 @@ import { BookCar } from "../redux/actions/bookingActions";
 import Spinner from "../components/Spinner";
 import moment from "moment";
 import StripeCheckout from "react-stripe-checkout";
-import { Calendar, Clock, Shield, Fuel, Users, ArrowLeft, Star, MessageCircle, User } from "lucide-react";
+import { Clock, Shield, Fuel, Users, ArrowLeft, Star} from "lucide-react";
+// import { Calendar, Clock, Shield, Fuel, Users, ArrowLeft, Star, MessageCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function BookingBike() {

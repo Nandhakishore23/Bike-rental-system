@@ -6,7 +6,7 @@ import Spinner from "../components/Spinner";
 import moment from "moment";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Calendar, Clock, MapPin, Receipt, X, Star } from "lucide-react";
+import { Calendar, Clock, Receipt, X, Star } from "lucide-react";
 // import { Calendar, Clock, MapPin, Receipt, X, Star } from "lucide-react";
 import api from "../api/axios";
 import { message } from "antd";

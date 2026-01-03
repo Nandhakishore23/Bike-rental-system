@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter, Redirect } from "react-router-dom";
+import { Route, BrowserRouter, Redirect } from "react-router-dom";
 import BookingBike from "./pages/BookingBike";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -11,6 +11,7 @@ import AdminRegister from "./pages/AdminRegister";
 import AddBike from "./pages/AddBike";
 import EditBike from "./pages/EditBike";
 import UserProfile from "./pages/UserProfile";
+import FleetMap from "./pages/FleetMap";
 
 function App() {
   const user = localStorage.getItem("user");
@@ -42,6 +43,7 @@ function App() {
           exact
           component={EditBike}
         />
+        <ProtectedRouteUser path="/map" exact component={FleetMap} />
       </BrowserRouter>
     </div>
   );
